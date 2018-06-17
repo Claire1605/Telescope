@@ -38,6 +38,8 @@ public class ZoomController : MonoBehaviour
         float zoomAmount = zoomInput * scaledZoomSpeed * Time.deltaTime;
         zoomSize += zoomAmount;
 
+		ClampZoomSize();
+
         if (Camera.main.orthographic)
         {
             Camera.main.orthographicSize = zoomSize;
@@ -50,6 +52,36 @@ public class ZoomController : MonoBehaviour
         //pan
         float scaledPanSpeed = panSpeed * zoomSize;
         Camera.main.transform.position += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Time.deltaTime * scaledPanSpeed;
+	}
+
+	public void ClampZoomSize()
+	{
+		RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward);
+
+		ZoomZone highestPriorityZone = null;
+
+		foreach (RaycastHit hit in hits)
+		{
+			ZoomZone hitZoomZone = hit.collider.GetComponent<ZoomZone>();
+
+			if (hitZoomZone)
+			{
+				if (highestPriorityZone == null || hitZoomZone.priority > highestPriorityZone.priority)
+				{
+					highestPriorityZone = hitZoomZone;
+				}
+			}
+		}
+
+		if (highestPriorityZone)
+		{
+			float minZoomSize = highestPriorityZone.GetMinZoomAtPoint(Camera.main.transform.position);
+
+			if (minZoomSize > zoomSize)
+			{
+				zoomSize = Mathf.Lerp(zoomSize, minZoomSize, Time.deltaTime);
+			}
+		}
 	}
 
     public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
