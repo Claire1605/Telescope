@@ -9,6 +9,7 @@ public class ZoomController : MonoBehaviour
     public float panSpeed;
     private Vector3 panVelocity;
     private float zoomSize;
+	private ZoomZone[] zoomZones;
 
 	void Start ()
     {
@@ -23,6 +24,8 @@ public class ZoomController : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+		zoomZones = FindObjectsOfType<ZoomZone>();
 	}
 	
 	void Update ()
@@ -42,7 +45,8 @@ public class ZoomController : MonoBehaviour
 
         if (Camera.main.orthographic)
         {
-            Camera.main.orthographicSize = zoomSize;
+			Camera.main.orthographicSize = zoomSize;
+			Camera.main.transform.localScale = Vector3.one * zoomSize;
         }
         else
         {
@@ -56,22 +60,18 @@ public class ZoomController : MonoBehaviour
 
 	public void CheckZoomZones()
 	{
-		RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward);
-
 		ZoomZone highestPriorityZone = null;
 
-		foreach (RaycastHit hit in hits)
+		foreach (ZoomZone zoomZone in zoomZones)
 		{
-			ZoomZone hitZoomZone = hit.collider.GetComponent<ZoomZone>();
-
-			if (hitZoomZone)
+			if (zoomZone)
 			{
 				// Check if the zoom zone is linked and should jump
-				zoomSize = zoomSize * hitZoomZone.GetLinkedZoomJump(new Bounds(transform.position, new Vector3(zoomSize, zoomSize / Camera.main.aspect)));
+				zoomSize = zoomSize * zoomZone.GetLinkedZoomJump(Camera.main.GetComponent<Collider>().bounds);
 
-				if (highestPriorityZone == null || hitZoomZone.priority > highestPriorityZone.priority)
+				if (highestPriorityZone == null || zoomZone.priority > highestPriorityZone.priority)
 				{
-					highestPriorityZone = hitZoomZone;
+					highestPriorityZone = zoomZone;
 				}
 			}
 		}
