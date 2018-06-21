@@ -8,6 +8,35 @@ public class ZoomZone : MonoBehaviour
 	public float minZoomScale;
 	public float priority;
 	public Texture2D zoomHeatmap;
+	public ZoomZone linkedZoomZone;
+	public int linkedZoomDirection;
+
+	public float GetLinkedZoomJump(Bounds viewBounds)
+	{
+		float zoomJump = 1.0f;
+
+		if (linkedZoomZone)
+		{
+			Bounds zoneBounds = GetComponent<BoxCollider>().bounds;
+
+			if (linkedZoomDirection == 1)
+			{
+				if (zoneBounds.Contains(viewBounds.max) == true && zoneBounds.Contains(viewBounds.min) == true)
+				{
+					zoomJump = linkedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+				}
+			}
+			else
+			{
+				if (zoneBounds.Contains(viewBounds.max) == false && zoneBounds.Contains(viewBounds.min) == false)
+				{
+					zoomJump = transform.localScale.magnitude / linkedZoomZone.transform.localScale.magnitude;
+				}
+			}
+		}
+
+		return zoomJump;
+	}
 
 	// Find the minimum zoom at a given point in the world
 	public float GetMinZoomAtPoint(Vector3 point)
@@ -35,7 +64,9 @@ public class ZoomZone : MonoBehaviour
 				minZoomAtPoint = Mathf.Lerp(minZoomScale, defaultZoomScale, Vector3.Distance(point, zoneBounds.center) / zoneBounds.extents.magnitude);
 			}
 		}
-		
+
+		Debug.Log(minZoomAtPoint);
+
 		return minZoomAtPoint;
 	}
 }

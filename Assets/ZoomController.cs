@@ -38,7 +38,7 @@ public class ZoomController : MonoBehaviour
         float zoomAmount = zoomInput * scaledZoomSpeed * Time.deltaTime;
         zoomSize += zoomAmount;
 
-		ClampZoomSize();
+		CheckZoomZones();
 
         if (Camera.main.orthographic)
         {
@@ -54,7 +54,7 @@ public class ZoomController : MonoBehaviour
         Camera.main.transform.position += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Time.deltaTime * scaledPanSpeed;
 	}
 
-	public void ClampZoomSize()
+	public void CheckZoomZones()
 	{
 		RaycastHit[] hits = Physics.RaycastAll(transform.position, transform.forward);
 
@@ -66,6 +66,9 @@ public class ZoomController : MonoBehaviour
 
 			if (hitZoomZone)
 			{
+				// Check if the zoom zone is linked and should jump
+				zoomSize = zoomSize * hitZoomZone.GetLinkedZoomJump(new Bounds(transform.position, new Vector3(zoomSize, zoomSize / Camera.main.aspect)));
+
 				if (highestPriorityZone == null || hitZoomZone.priority > highestPriorityZone.priority)
 				{
 					highestPriorityZone = hitZoomZone;
@@ -86,17 +89,16 @@ public class ZoomController : MonoBehaviour
 
     public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
     {
+		//pan
+		/* if ((Input.GetAxis("Horizontal") > 0 && panSpeed.x < 0) || (Input.GetAxis("Horizontal") < 0 && panSpeed.x > 0))
+		{
+			panSpeed.x = 0;
+		}
 
-        //pan
-        /* if ((Input.GetAxis("Horizontal") > 0 && panSpeed.x < 0) || (Input.GetAxis("Horizontal") < 0 && panSpeed.x > 0))
-         {
-             panSpeed.x = 0;
-         }
-
-         if ((Input.GetAxis("Vertical") > 0 && panSpeed.y < 0) || (Input.GetAxis("Vertical") < 0 && panSpeed.y > 0))
-         {
-             panSpeed.y = 0;
-         }*/
+		if ((Input.GetAxis("Vertical") > 0 && panSpeed.y < 0) || (Input.GetAxis("Vertical") < 0 && panSpeed.y > 0))
+		{
+			panSpeed.y = 0;
+		}*/
 
         panVelocity += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * panAcceleration * Time.deltaTime;
         panVelocity = Vector3.ClampMagnitude(panVelocity, panMaxSpeed);
