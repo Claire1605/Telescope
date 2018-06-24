@@ -67,9 +67,21 @@ public class ZoomController : MonoBehaviour
 			if (zoomZone)
 			{
 				// Check if the zoom zone is linked and should jump
-				zoomSize = zoomSize * zoomZone.GetLinkedZoomJump(Camera.main.GetComponent<Collider>().bounds);
+				float zoomJump = zoomZone.GetLinkedZoomJump(Camera.main.GetComponent<Collider>().bounds);
 
-				if (highestPriorityZone == null || zoomZone.priority > highestPriorityZone.priority)
+                if (zoomJump != 0.0f)
+                {
+                    ZoomZone linkedZoomZone = zoomZone.GetLinkedZoomZone();
+
+                    Vector3 newCameraPosition = linkedZoomZone.transform.position + zoomZone.GetZoomZoneOffset(Camera.main.transform.position) * zoomJump;
+                    Camera.main.transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, Camera.main.transform.position.z);
+                    zoomSize = zoomSize * zoomJump;
+
+                    zoomZone.UnRecordZoomZone(linkedZoomZone);
+                    linkedZoomZone.RecordZoomZone(zoomZone);
+                }
+
+				if (zoomZone.InsideZoomZone(Camera.main.transform.position) && (highestPriorityZone == null || zoomZone.priority > highestPriorityZone.priority))
 				{
 					highestPriorityZone = zoomZone;
 				}

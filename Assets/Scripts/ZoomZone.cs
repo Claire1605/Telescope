@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Edge { TOP, RIGHT, BOTTOM, LEFT }
+
 public class ZoomZone : MonoBehaviour
 {
 	public float defaultZoomScale;
@@ -10,36 +12,92 @@ public class ZoomZone : MonoBehaviour
 	public Texture2D zoomHeatmap;
 	public ZoomZone linkedZoomZone;
 	public int linkedZoomDirection;
+    public List<ZoomZone> recordedZoomZones;
 
-	public float GetLinkedZoomJump(Bounds viewBounds)
+    private void Start()
+    {
+        recordedZoomZones = new List<ZoomZone>();
+    }
+
+    public ZoomZone GetLinkedZoomZone()
+    {
+        ZoomZone lastRecordedZoomZone = linkedZoomZone;
+
+        if (linkedZoomZone)
+        {
+            // If any zoom zones have been recorded use the last one and clear it from the record
+            if (recordedZoomZones.Count > 0)
+            {
+                lastRecordedZoomZone = recordedZoomZones[recordedZoomZones.Count - 1];
+            }
+        }
+
+        return lastRecordedZoomZone;
+    }
+
+    public void RecordZoomZone(ZoomZone zoomZone)
+    {
+        // If a zoom zone has already been recorded or the zoom zone to be recorded is not the linked one
+        if (recordedZoomZones.Count > 0 || zoomZone != linkedZoomZone)
+        {
+            if (recordedZoomZones.Count == 0 || recordedZoomZones[recordedZoomZones.Count - 1] != zoomZone)
+            {
+                recordedZoomZones.Add(zoomZone);
+            }
+        }
+    }
+
+    public void UnRecordZoomZone(ZoomZone zoomZone)
+    {
+        if (recordedZoomZones.Count > 0 && recordedZoomZones[recordedZoomZones.Count - 1] == zoomZone)
+        {
+            recordedZoomZones.RemoveAt(recordedZoomZones.Count - 1);
+        }
+    }
+    
+    public float GetLinkedZoomJump(Bounds viewBounds)
 	{
-		float zoomJump = 1.0f;
+		float zoomJump = 0.0f;
 
-		if (linkedZoomZone)
+        ZoomZone lastRecordedZoomZone = GetLinkedZoomZone();
+
+		if (lastRecordedZoomZone)
 		{
 			Bounds zoneBounds = GetComponent<BoxCollider>().bounds;
 
-			if (linkedZoomDirection == 1)
-			{
-				if (zoneBounds.Contains(viewBounds.max) == true && zoneBounds.Contains(viewBounds.min) == true)
-				{
-					zoomJump = linkedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
-				}
-			}
-			else
-			{
-				if (zoneBounds.Contains(viewBounds.max) == false && zoneBounds.Contains(viewBounds.min) == false)
-				{
-					zoomJump = transform.localScale.magnitude / linkedZoomZone.transform.localScale.magnitude;
-				}
-			}
+            if (InsideZoomZone(viewBounds.center))
+            {
+                if (linkedZoomDirection == 1)
+                {
+                    if (zoneBounds.Contains(viewBounds.max) == true && zoneBounds.Contains(viewBounds.min) == true)
+                    {
+                        zoomJump = lastRecordedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+                    }
+                }
+                else
+                {
+                    if (zoneBounds.Contains(viewBounds.center + Vector3.up * viewBounds.extents.y) == false ||
+                        zoneBounds.Contains(viewBounds.center + Vector3.right * viewBounds.extents.x) == false ||
+                        zoneBounds.Contains(viewBounds.center + Vector3.down * viewBounds.extents.y) == false ||
+                        zoneBounds.Contains(viewBounds.center + Vector3.left * viewBounds.extents.x) == false)
+                    {
+                        zoomJump = lastRecordedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+                    }
+                }
+                
+            }  
 		}
 
 		return zoomJump;
 	}
 
-	// Find the minimum zoom at a given point in the world
-	public float GetMinZoomAtPoint(Vector3 point)
+    public Vector3 GetZoomZoneOffset(Vector3 point)
+    {
+        return point - transform.position;
+    }
+
+    // Find the minimum zoom at a given point in the world
+    public float GetMinZoomAtPoint(Vector3 point)
 	{
 		float minZoomAtPoint = 0.0f;
 		
@@ -65,8 +123,15 @@ public class ZoomZone : MonoBehaviour
 			}
 		}
 
-		Debug.Log(minZoomAtPoint);
-
 		return minZoomAtPoint;
 	}
+
+    public bool InsideZoomZone(Vector3 point)
+    {
+        Bounds zoneBounds = GetComponent<BoxCollider>().bounds;
+
+        // Align point with zone in the z axis
+        point.z = zoneBounds.center.z;
+        return zoneBounds.Contains(point);
+    }
 }
