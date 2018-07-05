@@ -87,7 +87,7 @@ public class ZoomController : MonoBehaviour
 				}
 			}
 		}
-
+		
 		if (highestPriorityZone)
 		{
 			float minZoomSize = highestPriorityZone.GetMinZoomAtPoint(Camera.main.transform.position);
