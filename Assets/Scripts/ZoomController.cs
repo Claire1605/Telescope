@@ -27,18 +27,22 @@ public class ZoomController : MonoBehaviour
 
 		zoomZones = FindObjectsOfType<ZoomZone>();
 	}
-	
-	void Update ()
-    {
-        //zoomy
-        float scaledZoomSpeed = zoomSpeed * zoomSize;
 
+    public float GetZoomInput()
+    {
         float zoomIn = (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Z)) ? 0 : -1;
         float zoomOut = (Input.GetMouseButton(1) || Input.GetKey(KeyCode.X)) ? 0 : 1;
         float zoomScroll = Input.GetAxis("Zoom") * scrollSpeed;
 
         float zoomInput = zoomScroll + zoomIn + zoomOut;
-        float zoomAmount = zoomInput * scaledZoomSpeed * Time.deltaTime;
+        return zoomInput;
+    }
+
+	void Update ()
+    {
+        //zoomy
+        float scaledZoomSpeed = zoomSpeed * zoomSize;   
+        float zoomAmount = GetZoomInput() * scaledZoomSpeed * Time.deltaTime;
         zoomSize += zoomAmount;
 
 		CheckZoomZones();
