@@ -134,4 +134,17 @@ public class ZoomZone : MonoBehaviour
         point.z = zoneBounds.center.z;
         return zoneBounds.Contains(point);
     }
+
+    public float ZoomZoneRatio()
+    {
+        float ratio = 0;
+        float cameraSize = 0;
+        float zoneSize = 0;
+
+        cameraSize = Vector3.Distance(Camera.main.GetComponent<BoxCollider>().bounds.max, Camera.main.GetComponent<BoxCollider>().bounds.center);
+        zoneSize = Vector3.Distance(GetComponent<BoxCollider>().bounds.max, GetComponent<BoxCollider>().bounds.center);
+
+        ratio = cameraSize / zoneSize;
+        return ratio;
+    }
 }
