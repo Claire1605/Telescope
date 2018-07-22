@@ -75,6 +75,8 @@ public class ZoomController : MonoBehaviour
 
                 if (zoomJump != 0.0f)
                 {
+                    GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().enabled = true;
+
                     ZoomZone linkedZoomZone = zoomZone.GetLinkedZoomZone();
 
                     Vector3 newCameraPosition = linkedZoomZone.transform.position + zoomZone.GetZoomZoneOffset(Camera.main.transform.position) * zoomJump;

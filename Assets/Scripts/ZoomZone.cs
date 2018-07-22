@@ -12,6 +12,7 @@ public class ZoomZone : MonoBehaviour
 	public Texture2D zoomHeatmap;
 	public ZoomZone linkedZoomZone;
 	public int linkedZoomDirection;
+    public bool recordZone = true;
     public List<ZoomZone> recordedZoomZones;
 
     private void Start()
@@ -38,7 +39,7 @@ public class ZoomZone : MonoBehaviour
     public void RecordZoomZone(ZoomZone zoomZone)
     {
         // If a zoom zone has already been recorded or the zoom zone to be recorded is not the linked one
-        if (recordedZoomZones.Count > 0 || zoomZone != linkedZoomZone)
+        if (zoomZone.recordZone && (recordedZoomZones.Count > 0 || zoomZone != linkedZoomZone))
         {
             if (recordedZoomZones.Count == 0 || recordedZoomZones[recordedZoomZones.Count - 1] != zoomZone)
             {
