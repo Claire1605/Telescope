@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public enum Edge { TOP, RIGHT, BOTTOM, LEFT }
 
@@ -8,10 +9,15 @@ public class ZoomZone : MonoBehaviour
 {
 	public float defaultZoomScale;
 	public float minZoomScale;
-	public float priority;
+    public float priority;
 	public Texture2D zoomHeatmap;
 	public ZoomZone linkedZoomZone;
-	public int linkedZoomDirection;
+    public bool linkedToEvent;
+    private bool invokedEventZoomIn;
+    public UnityEvent linkedZoomEventZoomIn;
+    private bool invokedEventZoomOut;
+    public UnityEvent linkedZoomEventZoomOut;
+    public int linkedZoomDirection;
     public bool recordZone = true;
     public List<ZoomZone> recordedZoomZones;
 
@@ -62,7 +68,7 @@ public class ZoomZone : MonoBehaviour
 
         ZoomZone lastRecordedZoomZone = GetLinkedZoomZone();
 
-		if (lastRecordedZoomZone)
+		if (lastRecordedZoomZone || linkedToEvent)
 		{
 			Bounds zoneBounds = GetComponent<BoxCollider>().bounds;
 
@@ -72,20 +78,63 @@ public class ZoomZone : MonoBehaviour
                 {
                     if (zoneBounds.Contains(viewBounds.max) == true && zoneBounds.Contains(viewBounds.min) == true)
                     {
-                        zoomJump = lastRecordedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+                        if (linkedToEvent && invokedEventZoomIn == false)
+                        {
+                            linkedZoomEventZoomIn.Invoke();
+                            invokedEventZoomIn = true;
+                            invokedEventZoomOut = false;
+                        }
+
+                        if (lastRecordedZoomZone)
+                        {
+                            zoomJump = lastRecordedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+                        }
                     }
                 }
-                else
+                else if (linkedZoomDirection == -1)
                 {
                     if (zoneBounds.Contains(viewBounds.center + Vector3.up * viewBounds.extents.y) == false ||
                         zoneBounds.Contains(viewBounds.center + Vector3.right * viewBounds.extents.x) == false ||
                         zoneBounds.Contains(viewBounds.center + Vector3.down * viewBounds.extents.y) == false ||
                         zoneBounds.Contains(viewBounds.center + Vector3.left * viewBounds.extents.x) == false)
                     {
-                        zoomJump = lastRecordedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+                        if (linkedToEvent && invokedEventZoomOut == false)
+                        {
+                            linkedZoomEventZoomOut.Invoke();
+                            invokedEventZoomOut = true;
+                            invokedEventZoomIn = false;
+                        }
+
+                        if (lastRecordedZoomZone)
+                        {
+                            zoomJump = lastRecordedZoomZone.transform.localScale.magnitude / transform.localScale.magnitude;
+                        }
                     }
                 }
-                
+                else //linked event only
+                {
+                    if (zoneBounds.Contains(viewBounds.max) == true && zoneBounds.Contains(viewBounds.min) == true) //zooming in
+                    {
+                        if (linkedToEvent && invokedEventZoomIn == false)
+                        {
+                            linkedZoomEventZoomIn.Invoke();
+                            invokedEventZoomIn = true;
+                            invokedEventZoomOut = false;
+                        }
+                    }
+                    if (zoneBounds.Contains(viewBounds.center + Vector3.up * viewBounds.extents.y) == false ||
+                    zoneBounds.Contains(viewBounds.center + Vector3.right * viewBounds.extents.x) == false ||
+                    zoneBounds.Contains(viewBounds.center + Vector3.down * viewBounds.extents.y) == false ||
+                    zoneBounds.Contains(viewBounds.center + Vector3.left * viewBounds.extents.x) == false) //zooming out
+                    {
+                        if (linkedToEvent && invokedEventZoomOut == false)
+                        {
+                            linkedZoomEventZoomOut.Invoke();
+                            invokedEventZoomOut = true;
+                            invokedEventZoomIn = false;
+                        }
+                    }
+                }
             }  
 		}
 
@@ -126,7 +175,7 @@ public class ZoomZone : MonoBehaviour
 
 		return minZoomAtPoint;
 	}
-
+    
     public bool InsideZoomZone(Vector3 point)
     {
         Bounds zoneBounds = GetComponent<BoxCollider>().bounds;
