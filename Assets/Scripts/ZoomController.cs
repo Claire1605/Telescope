@@ -2,17 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum GameState {INTRO, MAIN}
 public class ZoomController : MonoBehaviour
 {
+    public GameState gameState = GameState.INTRO;
     public float zoomSpeed;
     public float scrollSpeed;
     public float panSpeed;
+    public float maxZoomSize;
+    public Transform fadePosition;
+    public float minFadeSize;
+    public float maxFadeSize;
+    public float fadeDistance = 1.0f;
+
     private Vector3 panVelocity;
     private float zoomSize;
 	private ZoomZone[] zoomZones;
+    private Vector3 startPos;
+    private int distanceFromStartPos = 500;
 
-	void Start ()
+    void Start ()
     {
+        startPos = transform.position;
+
         if (Camera.main.orthographic)
         {
             zoomSize = Camera.main.orthographicSize;
@@ -40,6 +52,8 @@ public class ZoomController : MonoBehaviour
 
 	void Update ()
     {
+        FadeInOverlay();
+
         //zoomy
         float scaledZoomSpeed = zoomSpeed * zoomSize;   
         float zoomAmount = GetZoomInput() * scaledZoomSpeed * Time.deltaTime;
@@ -60,7 +74,38 @@ public class ZoomController : MonoBehaviour
         //pan
         float scaledPanSpeed = panSpeed * zoomSize;
         Camera.main.transform.position += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Time.deltaTime * scaledPanSpeed;
-	}
+
+        if (gameState == GameState.INTRO)
+        {
+            Camera.main.transform.position = new Vector3(Mathf.Clamp(Camera.main.transform.position.x, startPos.x - distanceFromStartPos, startPos.x + distanceFromStartPos), Mathf.Clamp(Camera.main.transform.position.y, startPos.y - distanceFromStartPos, startPos.y + distanceFromStartPos), Camera.main.transform.position.z);
+            if (zoomSize > maxZoomSize)
+            {
+                zoomSize = Mathf.Lerp(zoomSize, maxZoomSize, Time.deltaTime);
+            }
+        }
+    }
+
+    void FadeInOverlay()
+    {
+        if (gameState == GameState.INTRO)
+        {
+            Vector3 distance = transform.position - fadePosition.position;
+            distance.z = 0.0f;
+
+            if (distance.magnitude < fadeDistance)
+            {
+                GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, Mathf.Lerp(0.0f, 1.0f, 1.0f - Mathf.Clamp01((zoomSize - minFadeSize) / (maxFadeSize / minFadeSize))), Time.deltaTime * 2f);
+            }
+            else
+            {
+                GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, 0.0f, Time.deltaTime * 10);
+            }
+        }
+        else
+        {
+            GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, 1.0f, Time.deltaTime * 1.5f);
+        }
+    }
 
 	public void CheckZoomZones()
 	{
@@ -75,6 +120,11 @@ public class ZoomController : MonoBehaviour
 
                 if (zoomJump != 0.0f)
                 {
+                    if (gameState == GameState.INTRO)
+                    {
+                        gameState = GameState.MAIN;
+                    }
+
                     ZoomZone linkedZoomZone = zoomZone.GetLinkedZoomZone();
 
                     Vector3 newCameraPosition = linkedZoomZone.transform.position + zoomZone.GetZoomZoneOffset(Camera.main.transform.position) * zoomJump;
@@ -99,8 +149,8 @@ public class ZoomController : MonoBehaviour
 			if (minZoomSize > zoomSize)
 			{
 				zoomSize = Mathf.Lerp(zoomSize, minZoomSize, Time.deltaTime);
-			}
-		}
+            }
+        }
 	}
 
     public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
