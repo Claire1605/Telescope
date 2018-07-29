@@ -195,6 +195,9 @@ public class ZoomZone : MonoBehaviour
         zoneSize = Vector3.Distance(GetComponent<BoxCollider>().bounds.max, GetComponent<BoxCollider>().bounds.center);
 
         ratio = cameraSize / zoneSize;
+        //Debug.Log("cameraSize: " + cameraSize);
+        //Debug.Log("zoneSize: " + zoneSize);
+        Debug.Log("ratio: " + ratio);
         return ratio;
     }
 }

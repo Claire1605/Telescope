@@ -2,35 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//[ExecuteInEditMode]
 [RequireComponent(typeof(Renderer))]
 public class ZoomAnimation : MonoBehaviour
 {
     public ZoomZone parentZoomZone;
+    [Header("Ratio: Start and End")]
+    public float ratio = 1;
+    public float startRatio = 1;
+    public float endRatio = 1;
 
     [Header("Position")]
-    public AnimationCurve positionCurveX = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    public AnimationCurve positionCurveY = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    public Vector2 positionZoomOut;
-    public Vector2 positionZoomIn;
+    public bool animatePosition = false;
+    public Vector2 positionZoomedOut;
+    public Vector2 positionZoomedIn;
+    public AnimationCurve positionCurveX = AnimationCurve.EaseInOut(1, 0, 0, 1);
+    public AnimationCurve positionCurveY = AnimationCurve.EaseInOut(1, 0, 0, 1);
     private Vector3 initialPosition;
 
     [Header("Rotation")]
-    public AnimationCurve rotationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    public float rotationZoomOut = 0;
-    public float rotationZoomIn = 0;
+    public bool animateRotation = false;
+    public AnimationCurve rotationCurve = AnimationCurve.EaseInOut(1, 0, 0, 1);
+    public float rotationZoomedOut = 0;
+    public float rotationZoomedIn = 0;
 
     [Header("Scale")]
-    public AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    public Vector2 scaleZoomOut = Vector2.one;
-    public Vector2 scaleZoomIn = Vector2.one;
+    public bool animateScale = false;
+    public AnimationCurve scaleCurve = AnimationCurve.EaseInOut(1, 0, 0, 1);
+    public Vector2 scaleZoomedOut = Vector2.one;
+    public Vector2 scaleZoomedIn = Vector2.one;
 
     [Header("Colours")]
-    public AnimationCurve colourCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    public Color colourZoomOut;
-    public Color colourZoomIn;
+    public bool animateColour = false;
+    public AnimationCurve colourCurve = AnimationCurve.EaseInOut(1, 0, 0, 1);
+    public Color colourZoomedOut;
+    public Color colourZoomedIn;
 
     private Material mat;
-    private float t;
+    private float t = 0;
     private ZoomController zoomController;
 
     public void Start()
@@ -42,16 +51,37 @@ public class ZoomAnimation : MonoBehaviour
 
     public void Update()
     {
+        ratio = parentZoomZone.ZoomZoneRatio();
+
         if (!TimeManager.timeStop)
         {
-            t = Mathf.Clamp01(parentZoomZone.ZoomZoneRatio());
-
-            float xPosition = Mathf.Lerp(positionZoomIn.x, positionZoomOut.x, positionCurveX.Evaluate(t));
-            float yPosition = Mathf.Lerp(positionZoomIn.y, positionZoomOut.y, positionCurveY.Evaluate(t));
-            transform.localPosition = initialPosition + new Vector3(xPosition, yPosition, 0.0f);
-            transform.localScale = Vector3.Lerp(scaleZoomIn, scaleZoomOut, t);
-            transform.localEulerAngles = new Vector3(0, 0, Mathf.Lerp(rotationZoomIn, rotationZoomOut, rotationCurve.Evaluate(t)));
-            mat.color = Color.Lerp(colourZoomIn, colourZoomOut, colourCurve.Evaluate(t));
+            if (parentZoomZone) //null check
+            {
+                t = Mathf.Clamp01((ratio - endRatio) / (startRatio - endRatio));
+                t = Mathf.Pow(1 - t, 2);
+                if (animatePosition)
+                {
+                    float xPosition = Mathf.Lerp(positionZoomedIn.x, positionZoomedOut.x, positionCurveX.Evaluate(t));
+                    float yPosition = Mathf.Lerp(positionZoomedIn.y, positionZoomedOut.y, positionCurveY.Evaluate(t));
+                    transform.localPosition = initialPosition + new Vector3(xPosition, yPosition, 0.0f);
+                }
+                if (animateScale)
+                {
+                    transform.localScale = Vector3.Lerp(scaleZoomedIn, scaleZoomedOut, scaleCurve.Evaluate(t));
+                }
+                if (animateRotation)
+                {
+                    transform.localEulerAngles = new Vector3(0, 0, Mathf.Lerp(rotationZoomedIn, rotationZoomedOut, rotationCurve.Evaluate(t)));
+                }
+                if (animateColour)
+                {
+                    mat.color = Color.Lerp(colourZoomedIn, colourZoomedOut, colourCurve.Evaluate(t));
+                }
+            }
+            else
+            {
+                Debug.Log(gameObject.name + " " + transform.parent.name);
+            }
         }
     }
 }
