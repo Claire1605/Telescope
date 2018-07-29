@@ -14,9 +14,11 @@ public class ZoomController : MonoBehaviour
     public float minFadeSize;
     public float maxFadeSize;
     public float fadeDistance = 1.0f;
+	public AnimationCurve musicFadeCurve;
 
     private Vector3 panVelocity;
     private float zoomSize;
+	private float initialZoomSize;
 	private ZoomZone[] zoomZones;
     private Vector3 startPos;
     private int distanceFromStartPos = 500;
@@ -33,6 +35,8 @@ public class ZoomController : MonoBehaviour
         {
             zoomSize = Camera.main.fieldOfView;
         }
+
+		initialZoomSize = zoomSize;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -53,6 +57,7 @@ public class ZoomController : MonoBehaviour
 	void Update ()
     {
         FadeInOverlay();
+		FadeInMusic();
 
         //zoomy
         float scaledZoomSpeed = zoomSpeed * zoomSize;   
@@ -84,6 +89,19 @@ public class ZoomController : MonoBehaviour
             }
         }
     }
+
+	void FadeInMusic()
+	{
+		if (gameState == GameState.INTRO)
+		{
+			Debug.Log(GetComponent<AudioSource>().volume);
+			GetComponent<AudioSource>().volume = Mathf.Lerp(0.0f, 0.05f, musicFadeCurve.Evaluate(1.0f - Mathf.Clamp01(zoomSize / (initialZoomSize / 2))));
+		}
+		else
+		{
+			GetComponent<AudioSource>().volume = Mathf.Lerp(GetComponent<AudioSource>().volume, 0.05f, Time.deltaTime);
+		}
+	}
 
     void FadeInOverlay()
     {
