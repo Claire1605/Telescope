@@ -4,6 +4,8 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/ProCore/
+/Assets/ProCore.meta
+/[Pp]ackages/
 /Assets/ProCore/ProCore.meta
 /Assets/AssetStoreTools*
 
