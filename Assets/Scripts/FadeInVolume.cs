@@ -5,7 +5,9 @@ using UnityEngine;
 public class FadeInVolume : MonoBehaviour
 {
 	public float maxVolume = 0.05f;
-	AudioSource source;
+
+    private AudioSource source;
+    private bool faded = false;
 
 	private void Start()
 	{
@@ -14,7 +16,12 @@ public class FadeInVolume : MonoBehaviour
 
 	public void FadeIn()
 	{
-		StartCoroutine(FadeVolume());
+        if (faded == false)
+        {
+            faded = true;
+
+            StartCoroutine(FadeVolume());
+        }
 	}
 
 	public IEnumerator FadeVolume()
