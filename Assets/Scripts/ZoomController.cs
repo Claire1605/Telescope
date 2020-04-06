@@ -95,11 +95,11 @@ public class ZoomController : MonoBehaviour
 		if (gameState == GameState.INTRO)
 		{
 			Debug.Log(GetComponent<AudioSource>().volume);
-			GetComponent<AudioSource>().volume = Mathf.Lerp(0.0f, 0.05f, musicFadeCurve.Evaluate(1.0f - Mathf.Clamp01(zoomSize / (initialZoomSize / 2))));
+			GetComponent<AudioSource>().volume = Mathf.Lerp(0.0f, 1f, musicFadeCurve.Evaluate(1.0f - Mathf.Clamp01(zoomSize / (initialZoomSize / 2))));
 		}
 		else
 		{
-			GetComponent<AudioSource>().volume = Mathf.Lerp(GetComponent<AudioSource>().volume, 0.05f, Time.deltaTime);
+			GetComponent<AudioSource>().volume = Mathf.Lerp(GetComponent<AudioSource>().volume, 1f, Time.deltaTime);
 		}
 	}
 
