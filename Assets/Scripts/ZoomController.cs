@@ -23,6 +23,11 @@ public class ZoomController : MonoBehaviour
     private Vector3 startPos;
     private int distanceFromStartPos = 500;
 
+    private void Awake()
+    {
+        InputReference.GetPlayerID();
+    }
+
     void Start ()
     {
         startPos = transform.position;
@@ -46,9 +51,9 @@ public class ZoomController : MonoBehaviour
 
     public float GetZoomInput()
     {
-        float zoomIn = (Input.GetMouseButton(0) || Input.GetKey(KeyCode.Z)) ? 0 : -1;
-        float zoomOut = (Input.GetMouseButton(1) || Input.GetKey(KeyCode.X)) ? 0 : 1;
-        float zoomScroll = Input.GetAxis("Zoom") * scrollSpeed;
+        float zoomIn = InputReference.GetZoomIn() ? 1 : 0;
+        float zoomOut = InputReference.GetZoomOut() ? -1 : 0;
+        float zoomScroll = InputReference.GetZoomAxis() * scrollSpeed;
 
         float zoomInput = zoomScroll + zoomIn + zoomOut;
         return zoomInput;
@@ -78,7 +83,7 @@ public class ZoomController : MonoBehaviour
 
         //pan
         float scaledPanSpeed = panSpeed * zoomSize;
-        Camera.main.transform.position += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * Time.deltaTime * scaledPanSpeed;
+        Camera.main.transform.position += new Vector3(InputReference.GetHorizontalAxis(), InputReference.GetVerticalAxis()) * Time.deltaTime * scaledPanSpeed;
 
         if (gameState == GameState.INTRO)
         {
@@ -171,69 +176,69 @@ public class ZoomController : MonoBehaviour
         }
 	}
 
-    public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
-    {
-		//pan
-		/* if ((Input.GetAxis("Horizontal") > 0 && panSpeed.x < 0) || (Input.GetAxis("Horizontal") < 0 && panSpeed.x > 0))
-		{
-			panSpeed.x = 0;
-		}
+  //  public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
+  //  {
+		////pan
+		// if ((Input.GetAxis("Horizontal") > 0 && panSpeed.x < 0) || (Input.GetAxis("Horizontal") < 0 && panSpeed.x > 0))
+		//{
+		//	panSpeed.x = 0;
+		//}
 
-		if ((Input.GetAxis("Vertical") > 0 && panSpeed.y < 0) || (Input.GetAxis("Vertical") < 0 && panSpeed.y > 0))
-		{
-			panSpeed.y = 0;
-		}*/
+		//if ((Input.GetAxis("Vertical") > 0 && panSpeed.y < 0) || (Input.GetAxis("Vertical") < 0 && panSpeed.y > 0))
+		//{
+		//	panSpeed.y = 0;
+		//}
 
-        panVelocity += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * panAcceleration * Time.deltaTime;
-        panVelocity = Vector3.ClampMagnitude(panVelocity, panMaxSpeed);
+  //      panVelocity += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * panAcceleration * Time.deltaTime;
+  //      panVelocity = Vector3.ClampMagnitude(panVelocity, panMaxSpeed);
 
-        if (Input.GetAxis("Horizontal") == 0)
-        {
-            if (panVelocity.x > 0)
-            {
-                panVelocity.x -= panDecceleration * Time.deltaTime;
+  //      if (Input.GetAxis("Horizontal") == 0)
+  //      {
+  //          if (panVelocity.x > 0)
+  //          {
+  //              panVelocity.x -= panDecceleration * Time.deltaTime;
 
-                if (panVelocity.x < 0)
-                {
-                    panVelocity.x = 0;
-                }
-            }
+  //              if (panVelocity.x < 0)
+  //              {
+  //                  panVelocity.x = 0;
+  //              }
+  //          }
 
-            if (panVelocity.x < 0)
-            {
-                panVelocity.x += panDecceleration * Time.deltaTime;
+  //          if (panVelocity.x < 0)
+  //          {
+  //              panVelocity.x += panDecceleration * Time.deltaTime;
 
-                if (panVelocity.x > 0)
-                {
-                    panVelocity.x = 0;
-                }
-            }
-        }
+  //              if (panVelocity.x > 0)
+  //              {
+  //                  panVelocity.x = 0;
+  //              }
+  //          }
+  //      }
 
-        if (Input.GetAxis("Vertical") == 0)
-        {
-            if (panVelocity.y > 0)
-            {
-                panVelocity.y -= panDecceleration * Time.deltaTime;
+  //      if (Input.GetAxis("Vertical") == 0)
+  //      {
+  //          if (panVelocity.y > 0)
+  //          {
+  //              panVelocity.y -= panDecceleration * Time.deltaTime;
 
-                if (panVelocity.y < 0)
-                {
-                    panVelocity.y = 0;
-                }
-            }
+  //              if (panVelocity.y < 0)
+  //              {
+  //                  panVelocity.y = 0;
+  //              }
+  //          }
 
-            if (panVelocity.y < 0)
-            {
-                panVelocity.y += panDecceleration * Time.deltaTime;
+  //          if (panVelocity.y < 0)
+  //          {
+  //              panVelocity.y += panDecceleration * Time.deltaTime;
 
-                if (panVelocity.y > 0)
-                {
-                    panVelocity.y = 0;
-                }
-            }
-        }
+  //              if (panVelocity.y > 0)
+  //              {
+  //                  panVelocity.y = 0;
+  //              }
+  //          }
+  //      }
 
-        Vector3 scaledPanSpeed = panVelocity * zoomSize;
-        Camera.main.transform.position += scaledPanSpeed * Time.deltaTime;
-    }
+  //      Vector3 scaledPanSpeed = panVelocity * zoomSize;
+  //      Camera.main.transform.position += scaledPanSpeed * Time.deltaTime;
+  //  }
 }
