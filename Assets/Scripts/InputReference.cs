@@ -15,6 +15,8 @@ public static class InputReference
     public static string MoveHorizontal = "MoveHorizontal";
     public static string MoveVertical = "MoveVertical";
 
+    public static Vector2 initialTouchPosition = Vector2.zero;
+
     public static void GetPlayerID()
     {
         player = ReInput.players.GetPlayer(playerId);
@@ -24,9 +26,19 @@ public static class InputReference
     {
         bool pressed = false;
 
-        if (player.GetButton(ZoomInButton))
+        if (Input.touchCount == 1)
         {
-            pressed = true;
+            if (Input.GetTouch(0).tapCount == 1)
+            {
+                pressed = true;
+            }
+        }
+        else
+        {
+            if (player.GetButton(ZoomInButton))
+            {
+                pressed = true;
+            }
         }
 
         return pressed;
@@ -36,9 +48,19 @@ public static class InputReference
     {
         bool pressed = false;
 
-        if (player.GetButton(ZoomOutButton))
+        if (Input.touchCount == 1)
         {
-            pressed = true;
+            if (Input.GetTouch(0).tapCount == 2)
+            {
+                pressed = true;
+            }
+        }
+        else
+        {
+            if (player.GetButton(ZoomOutButton))
+            {
+                pressed = true;
+            }
         }
 
         return pressed;
@@ -57,7 +79,23 @@ public static class InputReference
     {
         float i = 0;
 
-        i = player.GetAxis(MoveHorizontal);
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                initialTouchPosition = touch.position;
+            }
+            else
+            {
+                i = (touch.position - initialTouchPosition).x / (Screen.width / 2);
+            }
+        }
+        else
+        {
+            i = player.GetAxis(MoveHorizontal);
+        }
 
         return i;
     }
@@ -66,7 +104,23 @@ public static class InputReference
     {
         float i = 0;
 
-        i = player.GetAxis(MoveVertical);
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                initialTouchPosition = touch.position;
+            }
+            else
+            {
+                i = (touch.position - initialTouchPosition).y / (Screen.width / 2);
+            }
+        }
+        else
+        {
+            i = player.GetAxis(MoveVertical);
+        }
 
         return i;
     }
