@@ -55,6 +55,14 @@ public class ZoomController : MonoBehaviour
         float zoomOut = InputReference.GetZoomOut() ? -1 : 0;
         float zoomScroll = InputReference.GetZoomAxis() * scrollSpeed;
 
+#if UNITY_EDITOR
+        if (Input.GetKey(KeyCode.LeftAlt))
+        {
+            zoomIn *= 10;
+            zoomOut *= 10;
+        }
+#endif
+
         float zoomInput = zoomScroll + zoomIn + zoomOut;
         return zoomInput;
     }
@@ -65,8 +73,10 @@ public class ZoomController : MonoBehaviour
 		FadeInMusic();
 
         //zoomy
-        float scaledZoomSpeed = zoomSpeed * zoomSize;   
+        float scaledZoomSpeed = zoomSpeed * zoomSize;
+
         float zoomAmount = GetZoomInput() * scaledZoomSpeed * Time.deltaTime;
+
         zoomSize += zoomAmount;
 
 		CheckZoomZones();

@@ -89,7 +89,7 @@ public static class InputReference
             }
             else
             {
-                i = (touch.position - initialTouchPosition).x / (Screen.width / 2);
+                i = Mathf.Clamp((touch.position - initialTouchPosition).x / (Screen.width / 4), -1.0f, 1.0f);
             }
         }
         else
@@ -114,7 +114,7 @@ public static class InputReference
             }
             else
             {
-                i = (touch.position - initialTouchPosition).y / (Screen.width / 2);
+                i = Mathf.Clamp((touch.position - initialTouchPosition).y / (Screen.width / 4), -1.0f, 1.0f);
             }
         }
         else
