@@ -15,6 +15,7 @@ public class ZoomController : MonoBehaviour
     public float maxFadeSize;
     public float fadeDistance = 1.0f;
 	public AnimationCurve musicFadeCurve;
+    public Animator telescopeOverlayAnimator;
 
     private Vector3 panVelocity;
     private float zoomSize;
@@ -102,6 +103,28 @@ public class ZoomController : MonoBehaviour
             {
                 zoomSize = Mathf.Lerp(zoomSize, maxZoomSize, Time.deltaTime);
             }
+        }
+
+        Debug.Log("GetFirstTouchBegan: " + InputReference.GetFirstZoomBegan());
+        Debug.Log("GetZoomInput: " + GetZoomInput());
+
+        if (InputReference.GetFirstZoomBegan() && GetZoomInput() == 1) // zooming in, first touch
+        {
+            telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
+            telescopeOverlayAnimator.ResetTrigger("zoomEnded");
+            telescopeOverlayAnimator.SetTrigger("zoomInStarted");
+        }
+        else if (InputReference.GetFirstZoomBegan() && GetZoomInput() == -1) // zooming out, first touch
+        {
+            telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
+            telescopeOverlayAnimator.ResetTrigger("zoomEnded");
+            telescopeOverlayAnimator.SetTrigger("zoomOutStarted");
+        }
+        else if (InputReference.GetFirstZoomEnded()) // end touch
+        {
+            telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
+            telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
+            telescopeOverlayAnimator.SetTrigger("zoomEnded");
         }
     }
 

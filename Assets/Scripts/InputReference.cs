@@ -124,4 +124,50 @@ public static class InputReference
 
         return i;
     }
+
+    public static bool GetFirstZoomBegan()
+    {
+        bool touchBegan = false;
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                touchBegan = true;
+            }
+        }
+        else if (player.GetButtonDown(ZoomInButton))
+        {
+            touchBegan = true;
+        }
+        else if (player.GetButtonDown(ZoomOutButton))
+        {
+            touchBegan = true;
+        }
+        return touchBegan;
+    }
+
+    public static bool GetFirstZoomEnded()
+    {
+        bool touchEnded = false;
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Ended)
+            {
+                touchEnded = true;
+            }
+        }
+        else if (player.GetButtonUp(ZoomInButton))
+        {
+            touchEnded = true;
+        }
+        else if (player.GetButtonUp(ZoomOutButton))
+        {
+            touchEnded = true;
+        }
+        return touchEnded;
+    }
 }
