@@ -16,7 +16,10 @@ public class ZoomController : MonoBehaviour
     public float fadeDistance = 1.0f;
 	public AnimationCurve musicFadeCurve;
     public Animator telescopeOverlayAnimator;
+    public float overlayPanSpeed = 1.0f;
+    public float overlayPanDistance = 20.0f;
     public TelescopeCreak telescopeCreak;
+    public TelescopeRingRotate telescopeRingRotate;
 
     private Vector3 panVelocity;
     private float zoomSize;
@@ -51,12 +54,21 @@ public class ZoomController : MonoBehaviour
 		zoomZones = FindObjectsOfType<ZoomZone>();
 	}
 
+	void Update ()
+    {
+		FadeInMusic();
+
+        UpdateView();
+
+        UpdateOverlay();
+    }
+
     public float GetZoomInput()
     {
         float zoomIn = InputReference.GetZoomIn() ? 1 : 0;
         float zoomOut = InputReference.GetZoomOut() ? -1 : 0;
         float zoomScroll = InputReference.GetZoomAxis() * scrollSpeed;
-        
+
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.LeftAlt))
         {
@@ -66,28 +78,24 @@ public class ZoomController : MonoBehaviour
 #endif
 
         float zoomInput = zoomScroll + zoomIn + zoomOut;
-        
+
         return zoomInput;
     }
 
-	void Update ()
+    void UpdateView()
     {
-        //FadeInOverlay();
-		FadeInMusic();
-
-        //zoomy
+        //zoom
         float scaledZoomSpeed = zoomSpeed * zoomSize;
-
         float zoomAmount = GetZoomInput() * scaledZoomSpeed * Time.deltaTime;
 
         zoomSize += zoomAmount;
 
-		CheckZoomZones();
+        CheckZoomZones();
 
         if (Camera.main.orthographic)
         {
-			Camera.main.orthographicSize = zoomSize;
-			Camera.main.transform.localScale = Vector3.one * zoomSize;
+            Camera.main.orthographicSize = zoomSize;
+            Camera.main.transform.localScale = Vector3.one * zoomSize;
         }
         else
         {
@@ -96,6 +104,14 @@ public class ZoomController : MonoBehaviour
 
         //pan
         float scaledPanSpeed = panSpeed * zoomSize;
+
+#if UNITY_EDITOR
+        if (Input.GetKey(KeyCode.LeftAlt))
+        {
+            scaledPanSpeed *= 10;
+        }
+#endif
+
         Camera.main.transform.position += new Vector3(InputReference.GetHorizontalAxis(), InputReference.GetVerticalAxis()) * Time.deltaTime * scaledPanSpeed;
 
         if (gameState == GameState.INTRO)
@@ -106,8 +122,15 @@ public class ZoomController : MonoBehaviour
                 zoomSize = Mathf.Lerp(zoomSize, maxZoomSize, Time.deltaTime);
             }
         }
-        
-        if (InputReference.GetFirstZoomBegan() && GetZoomInput() == 1) // zooming in, first touch
+    }
+
+    void UpdateOverlay()
+    {
+        bool firstZoomBegan = InputReference.GetFirstZoomBegan();
+        bool firstZoomEnded = InputReference.GetFirstZoomEnded();
+        float zoomInput = GetZoomInput();
+
+        if (firstZoomBegan && zoomInput == 1)
         {
             telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
             telescopeOverlayAnimator.ResetTrigger("zoomEnded");
@@ -115,7 +138,7 @@ public class ZoomController : MonoBehaviour
             InputReference.VibrateZoomIn();
             telescopeCreak.zoomInCreak();
         }
-        else if (InputReference.GetFirstZoomBegan() && GetZoomInput() == -1) // zooming out, first touch
+        else if (firstZoomBegan && zoomInput == -1)
         {
             telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
             telescopeOverlayAnimator.ResetTrigger("zoomEnded");
@@ -123,13 +146,19 @@ public class ZoomController : MonoBehaviour
             InputReference.VibrateZoomOut();
             telescopeCreak.zoomOutCreak();
         }
-        else if (InputReference.GetFirstZoomEnded()) // end touch
+        else if (firstZoomEnded)
         {
             telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
             telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
             telescopeOverlayAnimator.SetTrigger("zoomEnded");
             telescopeCreak.returnCreak();
         }
+
+        telescopeRingRotate.Rotate(zoomInput * Time.deltaTime);
+
+        Vector2 panAmount = new Vector2(InputReference.GetHorizontalAxis(), InputReference.GetVerticalAxis());
+        
+        telescopeOverlayAnimator.transform.localPosition = Vector2.Lerp(telescopeOverlayAnimator.transform.localPosition, panAmount * overlayPanDistance, Time.deltaTime * overlayPanSpeed);
     }
 
 	void FadeInMusic()

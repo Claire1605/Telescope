@@ -46,61 +46,65 @@ public static class InputReference
 
     public static float GetZoomAxis()
     {
-        float i = 0;
+        float zoom = 0;
 
-        i = player.GetAxis(ZoomAxis);
+        zoom = player.GetAxis(ZoomAxis);
 
-        return i;
+        return zoom;
     }
 
     public static float GetHorizontalAxis()
     {
-        float i = 0;
+        float horizontal = 0;
         
-        i = player.GetAxis(MoveHorizontal);
+        horizontal = player.GetAxis(MoveHorizontal);
 
-        return i;
+        horizontal = Mathf.Clamp(horizontal, -1.0f, 1.0f);
+
+        return horizontal;
     }
 
     public static float GetVerticalAxis()
     {
-        float i = 0;
+        float vertical = 0;
         
-        i = player.GetAxis(MoveVertical);
+        vertical = player.GetAxis(MoveVertical);
 
-        return i;
+        vertical = Mathf.Clamp(vertical, -1.0f, 1.0f);
+
+        return vertical;
     }
 
     public static bool GetFirstZoomBegan()
     {
-        bool touchBegan = false;
+        bool zoomBegan = false;
 
         if (player.GetButtonDown(ZoomInButton))
         {
-            touchBegan = true;
+            zoomBegan = true;
         }
         else if (player.GetButtonDown(ZoomOutButton))
         {
-            touchBegan = true;
+            zoomBegan = true;
         }
 
-        return touchBegan;
+        return zoomBegan;
     }
 
     public static bool GetFirstZoomEnded()
     {
-        bool touchEnded = false;
+        bool zoomEnded = false;
 
         if (player.GetButtonUp(ZoomInButton))
         {
-            touchEnded = true;
+            zoomEnded = true;
         }
         else if (player.GetButtonUp(ZoomOutButton))
         {
-            touchEnded = true;
+            zoomEnded = true;
         }
 
-        return touchEnded;
+        return zoomEnded;
     }
 
     public static void VibrateZoomIn()
