@@ -15,6 +15,8 @@ public class ZoomController : MonoBehaviour
     public float maxFadeSize;
     public float fadeDistance = 1.0f;
 	public AnimationCurve musicFadeCurve;
+    public Animator telescopeOverlayAnimator;
+    public TelescopeCreak telescopeCreak;
 
     private Vector3 panVelocity;
     private float zoomSize;
@@ -69,7 +71,7 @@ public class ZoomController : MonoBehaviour
 
 	void Update ()
     {
-        FadeInOverlay();
+        //FadeInOverlay();
 		FadeInMusic();
 
         //zoomy
@@ -103,6 +105,33 @@ public class ZoomController : MonoBehaviour
                 zoomSize = Mathf.Lerp(zoomSize, maxZoomSize, Time.deltaTime);
             }
         }
+
+        Debug.Log("GetFirstTouchBegan: " + InputReference.GetFirstZoomBegan());
+        Debug.Log("GetZoomInput: " + GetZoomInput());
+
+        if (InputReference.GetFirstZoomBegan() && GetZoomInput() == 1) // zooming in, first touch
+        {
+            telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
+            telescopeOverlayAnimator.ResetTrigger("zoomEnded");
+            telescopeOverlayAnimator.SetTrigger("zoomInStarted");
+            InputReference.VibrateZoomIn();
+            telescopeCreak.zoomInCreak();
+        }
+        else if (InputReference.GetFirstZoomBegan() && GetZoomInput() == -1) // zooming out, first touch
+        {
+            telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
+            telescopeOverlayAnimator.ResetTrigger("zoomEnded");
+            telescopeOverlayAnimator.SetTrigger("zoomOutStarted");
+            InputReference.VibrateZoomOut();
+            telescopeCreak.zoomOutCreak();
+        }
+        else if (InputReference.GetFirstZoomEnded()) // end touch
+        {
+            telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
+            telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
+            telescopeOverlayAnimator.SetTrigger("zoomEnded");
+            telescopeCreak.returnCreak();
+        }
     }
 
 	void FadeInMusic()
@@ -117,27 +146,27 @@ public class ZoomController : MonoBehaviour
 		}
 	}
 
-    void FadeInOverlay()
-    {
-        if (gameState == GameState.INTRO)
-        {
-            Vector3 distance = transform.position - fadePosition.position;
-            distance.z = 0.0f;
+    //void FadeInOverlay()
+    //{
+    //    if (gameState == GameState.INTRO)
+    //    {
+    //        Vector3 distance = transform.position - fadePosition.position;
+    //        distance.z = 0.0f;
 
-            if (distance.magnitude < fadeDistance)
-            {
-                GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, Mathf.Lerp(0.0f, 1.0f, 1.0f - Mathf.Clamp01((zoomSize - minFadeSize) / (maxFadeSize / minFadeSize))), Time.deltaTime * 2f);
-            }
-            else
-            {
-                GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, 0.0f, Time.deltaTime * 10);
-            }
-        }
-        else
-        {
-            GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, 1.0f, Time.deltaTime * 1.5f);
-        }
-    }
+    //        if (distance.magnitude < fadeDistance)
+    //        {
+    //            GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, Mathf.Lerp(0.0f, 1.0f, 1.0f - Mathf.Clamp01((zoomSize - minFadeSize) / (maxFadeSize / minFadeSize))), Time.deltaTime * 2f);
+    //        }
+    //        else
+    //        {
+    //            GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, 0.0f, Time.deltaTime * 10);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity = Mathf.Lerp(GetComponent<UnityStandardAssets.ImageEffects.ScreenOverlay>().intensity, 1.0f, Time.deltaTime * 1.5f);
+    //    }
+    //}
 
 	public void CheckZoomZones()
 	{

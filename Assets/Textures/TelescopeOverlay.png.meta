@@ -1,7 +1,34 @@
 fileFormatVersion: 2
-guid: dc6855734a4cd6341b2fc4e96bb33e44
+guid: 77734e34177edcd4abea2bcf38eb654f
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: 6458654445253454941
+    second: TelescopeOverlay9Slice_0
+  - first:
+      213: 580172404382218242
+    second: TelescopeOverlay9Slice_1
+  - first:
+      213: -928357509067534003
+    second: TelescopeOverlay9Slice_2
+  - first:
+      213: -8467264616568581831
+    second: TelescopeOverlay9Slice_3
+  - first:
+      213: 7422438328928116426
+    second: TelescopeOverlay9Slice_4
+  - first:
+      213: -5362947378796525158
+    second: TelescopeOverlay9Slice_5
+  - first:
+      213: -7054210587453236336
+    second: TelescopeOverlay9Slice_6
+  - first:
+      213: -1420289754182955338
+    second: TelescopeOverlay9Slice_7
+  - first:
+      213: 455495712112922824
+    second: TelescopeOverlay
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -69,10 +96,67 @@ TextureImporter:
     allowsAlphaSplitting: 0
     overridden: 0
     androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 1
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: TelescopeOverlay
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 620
+        height: 620
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 8, y: 8, z: 8, w: 8}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c05435dfee325600800000000000000
+      internalID: 455495712112922824
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
