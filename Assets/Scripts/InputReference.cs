@@ -181,11 +181,11 @@ public static class InputReference
     public static void VibrateZoomIn()
     {
         player.SetVibration(1,0.15f,0.6f);
-        Handheld.Vibrate();
+       // Handheld.Vibrate();
     }
     public static void VibrateZoomOut()
     {
         player.SetVibration(0, 0.15f, 0.6f);
-        Handheld.Vibrate();
+       // Handheld.Vibrate();
     }
 }
