@@ -25,6 +25,53 @@ public class ZoomController : MonoBehaviour
     private Vector3 startPos;
     private int distanceFromStartPos = 500;
 
+    public UnityEngine.UI.Button zoomInButton;
+    public UnityEngine.UI.Button zoomOutButton;
+    public UnityEngine.UI.Button zoomNoneButton;
+
+    UnityEngine.UI.ColorBlock activeButtonColours;
+    UnityEngine.UI.ColorBlock inactiveButtonColours;
+
+    private bool touchOverrideZoomOut = false;
+    private bool touchOverrideZoomIn = false;
+
+    public void SetTouchOverrideZoomOut()
+    {
+        touchOverrideZoomIn = false;
+        touchOverrideZoomOut = true;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        SetButtonColours(-1);
+#endif
+    }
+
+    public void SetTouchOverrideZoomIn()
+    {
+        touchOverrideZoomIn = true;
+        touchOverrideZoomOut = false;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        SetButtonColours(1);
+#endif
+    }
+
+    public void SetTouchOverrideZoomNone()
+    {
+        touchOverrideZoomIn = false;
+        touchOverrideZoomOut = false;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        SetButtonColours(0);
+#endif
+    }
+
+    public void SetButtonColours(float zoomInput)
+    {
+        zoomOutButton.colors = zoomInput < 0.0f ? activeButtonColours : inactiveButtonColours;
+        zoomInButton.colors = zoomInput > 0.0f ? activeButtonColours : inactiveButtonColours;
+        zoomNoneButton.colors = zoomInput == 0.0f ? activeButtonColours : inactiveButtonColours;
+    }
+
     private void Awake()
     {
         InputReference.GetPlayerID();
@@ -34,6 +81,14 @@ public class ZoomController : MonoBehaviour
     {
         startPos = transform.position;
 
+        activeButtonColours = zoomInButton.colors;
+        activeButtonColours.normalColor = activeButtonColours.pressedColor;
+
+        inactiveButtonColours = zoomInButton.colors;
+
+#if UNITY_ANDROID && !UNITY_EDITOR
+        SetButtonColours(0);
+#endif
         if (Camera.main.orthographic)
         {
             zoomSize = Camera.main.orthographicSize;
@@ -57,6 +112,27 @@ public class ZoomController : MonoBehaviour
         float zoomOut = InputReference.GetZoomOut() ? -1 : 0;
         float zoomScroll = InputReference.GetZoomAxis() * scrollSpeed;
 
+        // If you are using an android device override touches
+#if UNITY_ANDROID && !UNITY_EDITOR
+        if (touchOverrideZoomIn && Input.touchCount == 1)
+        {
+            zoomIn = 1;
+            zoomOut = 0;
+        }
+
+        if (touchOverrideZoomOut && Input.touchCount == 1)
+        {
+            zoomIn = 0;
+            zoomOut = -1;
+        }
+        
+        if (touchOverrideZoomIn == false && touchOverrideZoomOut == false)
+        {
+            zoomIn = 0;
+            zoomOut = 0;
+        }
+#endif
+
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.LeftAlt))
         {
@@ -66,6 +142,11 @@ public class ZoomController : MonoBehaviour
 #endif
 
         float zoomInput = zoomScroll + zoomIn + zoomOut;
+
+#if !UNITY_ANDROID || UNITY_EDITOR
+        SetButtonColours(zoomInput);
+#endif
+
         return zoomInput;
     }
 

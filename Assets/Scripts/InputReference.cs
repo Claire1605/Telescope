@@ -30,7 +30,7 @@ public static class InputReference
         {
             if (Input.GetTouch(0).tapCount == 1)
             {
-                pressed = true;
+                //pressed = true;
             }
         }
         else
@@ -52,7 +52,7 @@ public static class InputReference
         {
             if (Input.GetTouch(0).tapCount == 2)
             {
-                pressed = true;
+                //pressed = true;
             }
         }
         else
