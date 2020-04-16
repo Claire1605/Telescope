@@ -17,6 +17,13 @@ public static class InputReference
 
     public static Vector2 initialTouchPosition = Vector2.zero;
 
+
+#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
+    public static bool usingTouch = true;
+#else
+    public static bool usingTouch = false;
+#endif
+
     public static void GetPlayerID()
     {
         player = ReInput.players.GetPlayer(playerId);

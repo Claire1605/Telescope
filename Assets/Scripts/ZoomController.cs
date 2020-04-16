@@ -37,32 +37,35 @@ public class ZoomController : MonoBehaviour
 
     public void SetTouchOverrideZoomOut()
     {
-        touchOverrideZoomIn = false;
-        touchOverrideZoomOut = true;
+        if (InputReference.usingTouch)
+        {
+            touchOverrideZoomIn = false;
+            touchOverrideZoomOut = true;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-        SetButtonColours(-1);
-#endif
+            SetButtonColours(-1);
+        }
     }
 
     public void SetTouchOverrideZoomIn()
     {
-        touchOverrideZoomIn = true;
-        touchOverrideZoomOut = false;
+        if (InputReference.usingTouch)
+        {
+            touchOverrideZoomIn = true;
+            touchOverrideZoomOut = false;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-        SetButtonColours(1);
-#endif
+            SetButtonColours(1);
+        }
     }
 
     public void SetTouchOverrideZoomNone()
     {
-        touchOverrideZoomIn = false;
-        touchOverrideZoomOut = false;
+        if (InputReference.usingTouch)
+        {
+            touchOverrideZoomIn = false;
+            touchOverrideZoomOut = false;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
-        SetButtonColours(0);
-#endif
+            SetButtonColours(0);
+        }
     }
 
     public void SetButtonColours(float zoomInput)
@@ -86,9 +89,8 @@ public class ZoomController : MonoBehaviour
 
         inactiveButtonColours = zoomInButton.colors;
 
-#if UNITY_ANDROID && !UNITY_EDITOR
         SetButtonColours(0);
-#endif
+
         if (Camera.main.orthographic)
         {
             zoomSize = Camera.main.orthographicSize;
@@ -113,25 +115,26 @@ public class ZoomController : MonoBehaviour
         float zoomScroll = InputReference.GetZoomAxis() * scrollSpeed;
 
         // If you are using an android device override touches
-#if UNITY_ANDROID && !UNITY_EDITOR
-        if (touchOverrideZoomIn && Input.touchCount == 1)
+        if (InputReference.usingTouch)
         {
-            zoomIn = 1;
-            zoomOut = 0;
-        }
+            if (touchOverrideZoomIn && Input.touchCount == 1)
+            {
+                zoomIn = 1;
+                zoomOut = 0;
+            }
 
-        if (touchOverrideZoomOut && Input.touchCount == 1)
-        {
-            zoomIn = 0;
-            zoomOut = -1;
+            if (touchOverrideZoomOut && Input.touchCount == 1)
+            {
+                zoomIn = 0;
+                zoomOut = -1;
+            }
+
+            if (touchOverrideZoomIn == false && touchOverrideZoomOut == false)
+            {
+                zoomIn = 0;
+                zoomOut = 0;
+            }
         }
-        
-        if (touchOverrideZoomIn == false && touchOverrideZoomOut == false)
-        {
-            zoomIn = 0;
-            zoomOut = 0;
-        }
-#endif
 
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.LeftAlt))
@@ -142,10 +145,12 @@ public class ZoomController : MonoBehaviour
 #endif
 
         float zoomInput = zoomScroll + zoomIn + zoomOut;
-
-#if !UNITY_ANDROID || UNITY_EDITOR
-        SetButtonColours(zoomInput);
-#endif
+        
+        // Update button colours on non touch devices
+        if (InputReference.usingTouch == false)
+        {
+            SetButtonColours(zoomInput);
+        }
 
         return zoomInput;
     }
@@ -206,7 +211,7 @@ public class ZoomController : MonoBehaviour
             InputReference.VibrateZoomOut();
             telescopeCreak.zoomOutCreak();
         }
-        else if (InputReference.GetFirstZoomEnded()) // end touch
+        else if (InputReference.GetFirstZoomEnded() && (InputReference.usingTouch == false || (touchOverrideZoomIn || touchOverrideZoomOut))) // end touch
         {
             telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
             telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
