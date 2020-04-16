@@ -15,15 +15,6 @@ public static class InputReference
     public static string MoveHorizontal = "MoveHorizontal";
     public static string MoveVertical = "MoveVertical";
 
-    public static Vector2 initialTouchPosition = Vector2.zero;
-
-
-#if (UNITY_ANDROID || UNITY_IPHONE) && !UNITY_EDITOR
-    public static bool usingTouch = true;
-#else
-    public static bool usingTouch = false;
-#endif
-
     public static void GetPlayerID()
     {
         player = ReInput.players.GetPlayer(playerId);
@@ -32,20 +23,10 @@ public static class InputReference
     public static bool GetZoomIn()
     {
         bool pressed = false;
-
-        if (Input.touchCount == 1)
+        
+        if (player.GetButton(ZoomInButton))
         {
-            if (Input.GetTouch(0).tapCount == 1)
-            {
-                //pressed = true;
-            }
-        }
-        else
-        {
-            if (player.GetButton(ZoomInButton))
-            {
-                pressed = true;
-            }
+            pressed = true;
         }
 
         return pressed;
@@ -54,20 +35,10 @@ public static class InputReference
     public static bool GetZoomOut()
     {
         bool pressed = false;
-
-        if (Input.touchCount == 1)
+        
+        if (player.GetButton(ZoomOutButton))
         {
-            if (Input.GetTouch(0).tapCount == 2)
-            {
-                //pressed = true;
-            }
-        }
-        else
-        {
-            if (player.GetButton(ZoomOutButton))
-            {
-                pressed = true;
-            }
+            pressed = true;
         }
 
         return pressed;
@@ -85,24 +56,8 @@ public static class InputReference
     public static float GetHorizontalAxis()
     {
         float i = 0;
-
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                initialTouchPosition = touch.position;
-            }
-            else
-            {
-                i = Mathf.Clamp((touch.position - initialTouchPosition).x / (Screen.width / 4), -1.0f, 1.0f);
-            }
-        }
-        else
-        {
-            i = player.GetAxis(MoveHorizontal);
-        }
+        
+        i = player.GetAxis(MoveHorizontal);
 
         return i;
     }
@@ -110,24 +65,8 @@ public static class InputReference
     public static float GetVerticalAxis()
     {
         float i = 0;
-
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                initialTouchPosition = touch.position;
-            }
-            else
-            {
-                i = Mathf.Clamp((touch.position - initialTouchPosition).y / (Screen.width / 4), -1.0f, 1.0f);
-            }
-        }
-        else
-        {
-            i = player.GetAxis(MoveVertical);
-        }
+        
+        i = player.GetAxis(MoveVertical);
 
         return i;
     }
@@ -135,16 +74,8 @@ public static class InputReference
     public static bool GetFirstZoomBegan()
     {
         bool touchBegan = false;
-        if (Input.touchCount == 1)
-        {
-            Touch touch = Input.GetTouch(0);
 
-            if (touch.phase == TouchPhase.Began)
-            {
-                touchBegan = true;
-            }
-        }
-        else if (player.GetButtonDown(ZoomInButton))
+        if (player.GetButtonDown(ZoomInButton))
         {
             touchBegan = true;
         }
@@ -152,22 +83,15 @@ public static class InputReference
         {
             touchBegan = true;
         }
+
         return touchBegan;
     }
 
     public static bool GetFirstZoomEnded()
     {
         bool touchEnded = false;
-        if (Input.touchCount == 1)
-        {
-            Touch touch = Input.GetTouch(0);
 
-            if (touch.phase == TouchPhase.Ended)
-            {
-                touchEnded = true;
-            }
-        }
-        else if (player.GetButtonUp(ZoomInButton))
+        if (player.GetButtonUp(ZoomInButton))
         {
             touchEnded = true;
         }
@@ -175,17 +99,16 @@ public static class InputReference
         {
             touchEnded = true;
         }
+
         return touchEnded;
     }
 
     public static void VibrateZoomIn()
     {
         player.SetVibration(1,0.15f,0.6f);
-       // Handheld.Vibrate();
     }
     public static void VibrateZoomOut()
     {
         player.SetVibration(0, 0.15f, 0.6f);
-       // Handheld.Vibrate();
     }
 }

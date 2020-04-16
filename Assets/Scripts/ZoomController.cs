@@ -24,57 +24,7 @@ public class ZoomController : MonoBehaviour
 	private ZoomZone[] zoomZones;
     private Vector3 startPos;
     private int distanceFromStartPos = 500;
-
-    public UnityEngine.UI.Button zoomInButton;
-    public UnityEngine.UI.Button zoomOutButton;
-    public UnityEngine.UI.Button zoomNoneButton;
-
-    UnityEngine.UI.ColorBlock activeButtonColours;
-    UnityEngine.UI.ColorBlock inactiveButtonColours;
-
-    private bool touchOverrideZoomOut = false;
-    private bool touchOverrideZoomIn = false;
-
-    public void SetTouchOverrideZoomOut()
-    {
-        if (InputReference.usingTouch)
-        {
-            touchOverrideZoomIn = false;
-            touchOverrideZoomOut = true;
-
-            SetButtonColours(-1);
-        }
-    }
-
-    public void SetTouchOverrideZoomIn()
-    {
-        if (InputReference.usingTouch)
-        {
-            touchOverrideZoomIn = true;
-            touchOverrideZoomOut = false;
-
-            SetButtonColours(1);
-        }
-    }
-
-    public void SetTouchOverrideZoomNone()
-    {
-        if (InputReference.usingTouch)
-        {
-            touchOverrideZoomIn = false;
-            touchOverrideZoomOut = false;
-
-            SetButtonColours(0);
-        }
-    }
-
-    public void SetButtonColours(float zoomInput)
-    {
-        zoomOutButton.colors = zoomInput < 0.0f ? activeButtonColours : inactiveButtonColours;
-        zoomInButton.colors = zoomInput > 0.0f ? activeButtonColours : inactiveButtonColours;
-        zoomNoneButton.colors = zoomInput == 0.0f ? activeButtonColours : inactiveButtonColours;
-    }
-
+    
     private void Awake()
     {
         InputReference.GetPlayerID();
@@ -83,14 +33,7 @@ public class ZoomController : MonoBehaviour
     void Start ()
     {
         startPos = transform.position;
-
-        activeButtonColours = zoomInButton.colors;
-        activeButtonColours.normalColor = activeButtonColours.pressedColor;
-
-        inactiveButtonColours = zoomInButton.colors;
-
-        SetButtonColours(0);
-
+        
         if (Camera.main.orthographic)
         {
             zoomSize = Camera.main.orthographicSize;
@@ -113,29 +56,7 @@ public class ZoomController : MonoBehaviour
         float zoomIn = InputReference.GetZoomIn() ? 1 : 0;
         float zoomOut = InputReference.GetZoomOut() ? -1 : 0;
         float zoomScroll = InputReference.GetZoomAxis() * scrollSpeed;
-
-        // If you are using an android device override touches
-        if (InputReference.usingTouch)
-        {
-            if (touchOverrideZoomIn && Input.touchCount == 1)
-            {
-                zoomIn = 1;
-                zoomOut = 0;
-            }
-
-            if (touchOverrideZoomOut && Input.touchCount == 1)
-            {
-                zoomIn = 0;
-                zoomOut = -1;
-            }
-
-            if (touchOverrideZoomIn == false && touchOverrideZoomOut == false)
-            {
-                zoomIn = 0;
-                zoomOut = 0;
-            }
-        }
-
+        
 #if UNITY_EDITOR
         if (Input.GetKey(KeyCode.LeftAlt))
         {
@@ -146,12 +67,6 @@ public class ZoomController : MonoBehaviour
 
         float zoomInput = zoomScroll + zoomIn + zoomOut;
         
-        // Update button colours on non touch devices
-        if (InputReference.usingTouch == false)
-        {
-            SetButtonColours(zoomInput);
-        }
-
         return zoomInput;
     }
 
@@ -191,10 +106,7 @@ public class ZoomController : MonoBehaviour
                 zoomSize = Mathf.Lerp(zoomSize, maxZoomSize, Time.deltaTime);
             }
         }
-
-        Debug.Log("GetFirstTouchBegan: " + InputReference.GetFirstZoomBegan());
-        Debug.Log("GetZoomInput: " + GetZoomInput());
-
+        
         if (InputReference.GetFirstZoomBegan() && GetZoomInput() == 1) // zooming in, first touch
         {
             telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
@@ -211,7 +123,7 @@ public class ZoomController : MonoBehaviour
             InputReference.VibrateZoomOut();
             telescopeCreak.zoomOutCreak();
         }
-        else if (InputReference.GetFirstZoomEnded() && (InputReference.usingTouch == false || (touchOverrideZoomIn || touchOverrideZoomOut))) // end touch
+        else if (InputReference.GetFirstZoomEnded()) // end touch
         {
             telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
             telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
