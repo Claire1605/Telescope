@@ -50,9 +50,12 @@ public class ZoomController : MonoBehaviour
 		initialZoomSize = zoomSize;
 
 		zoomZones = FindObjectsOfType<ZoomZone>();
-	}
 
-	void Update ()
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void Update ()
     {
 		FadeInMusic();
 
