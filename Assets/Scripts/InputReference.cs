@@ -14,10 +14,30 @@ public static class InputReference
     public static string ZoomAxis = "ZoomAxis";
     public static string MoveHorizontal = "MoveHorizontal";
     public static string MoveVertical = "MoveVertical";
+    public static string OpenMenu = "OpenMenu";
 
     public static void GetPlayerID()
     {
         player = ReInput.players.GetPlayer(playerId);
+    }
+
+    public static ControllerType GetActiveController()
+    {
+        ControllerType controllerType = ControllerType.Mouse;
+        Controller activeController = player.controllers.GetLastActiveController();
+        if (activeController == null)
+        {
+            controllerType = ControllerType.Mouse;
+        }
+        else if (activeController.type == ControllerType.Joystick)
+        {
+            controllerType = ControllerType.Joystick;
+        }
+        else if (activeController.type == ControllerType.Keyboard || activeController.type == ControllerType.Mouse)
+        {
+            controllerType = ControllerType.Keyboard;
+        }
+        return controllerType;
     }
 
     public static bool GetZoomIn()
@@ -114,5 +134,17 @@ public static class InputReference
     public static void VibrateZoomOut()
     {
         player.SetVibration(0, 0.15f, 0.6f);
+    }
+
+    public static bool GetOpenMenu()
+    {
+        bool pressed = false;
+
+        if (player.GetButton(OpenMenu))
+        {
+            pressed = true;
+        }
+
+        return pressed;
     }
 }

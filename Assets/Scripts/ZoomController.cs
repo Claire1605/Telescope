@@ -20,6 +20,7 @@ public class ZoomController : MonoBehaviour
     public float overlayPanDistance = 20.0f;
     public TelescopeCreak telescopeCreak;
     public TelescopeRingRotate telescopeRingRotate;
+    public Menu menu;
 
     private Vector3 panVelocity;
     private float zoomSize;
@@ -48,9 +49,6 @@ public class ZoomController : MonoBehaviour
 
 		initialZoomSize = zoomSize;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-
 		zoomZones = FindObjectsOfType<ZoomZone>();
 	}
 
@@ -58,7 +56,10 @@ public class ZoomController : MonoBehaviour
     {
 		FadeInMusic();
 
-        UpdateView();
+        if (!menu.paused)
+        {
+            UpdateView();
+        }
 
         UpdateOverlay();
     }
