@@ -79,7 +79,7 @@ public static class InputReference
         
         horizontal = player.GetAxis(MoveHorizontal);
 
-        horizontal = Mathf.Clamp(horizontal, -1.0f, 1.0f);
+        horizontal = Mathf.Clamp(horizontal, -2.0f, 2.0f);
 
         return horizontal;
     }
@@ -90,7 +90,7 @@ public static class InputReference
         
         vertical = player.GetAxis(MoveVertical);
 
-        vertical = Mathf.Clamp(vertical, -1.0f, 1.0f);
+        vertical = Mathf.Clamp(vertical, -2.0f, 2.0f);
 
         return vertical;
     }

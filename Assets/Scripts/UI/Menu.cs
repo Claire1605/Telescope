@@ -46,12 +46,12 @@ public class Menu : MonoBehaviour
 
         if (paused)
         {
-            if (InputReference.GetHorizontalAxis() > 0 && canTurn)
+            if (InputReference.GetHorizontalAxis() < 0 && canTurn)
             {
                 canTurn = false;
                 menuRotate.SetTrigger("turnClockwise");
             }
-            else if (InputReference.GetHorizontalAxis() < 0 && canTurn)
+            else if (InputReference.GetHorizontalAxis() > 0 && canTurn)
             {
                 canTurn = false;
                 menuRotate.SetTrigger("turnAnticlockwise");
