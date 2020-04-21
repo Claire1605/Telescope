@@ -46,17 +46,17 @@ public class Menu : MonoBehaviour
 
         if (paused)
         {
-            if (InputReference.GetHorizontalAxis() < 0 && canTurn)
+            if (InputReference.GetMenuHorizontalAxis() < 0 && canTurn)
             {
                 canTurn = false;
                 menuRotate.SetTrigger("turnClockwise");
             }
-            else if (InputReference.GetHorizontalAxis() > 0 && canTurn)
+            else if (InputReference.GetMenuHorizontalAxis() > 0 && canTurn)
             {
                 canTurn = false;
                 menuRotate.SetTrigger("turnAnticlockwise");
             }
-            else if (InputReference.GetHorizontalAxis() == 0)
+            else if (InputReference.GetMenuHorizontalAxis() == 0)
             {
                 canTurn = true;
             }

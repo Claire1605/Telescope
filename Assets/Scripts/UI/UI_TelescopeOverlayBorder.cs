@@ -35,11 +35,8 @@ public class UI_TelescopeOverlayBorder : MonoBehaviour
 
     void FillBorders()
     {
-        Vector3[] v = new Vector3[4];
-        thisRect.GetWorldCorners(v);
-
-        float x = v[2].x;
-        float y = v[2].y;
+        float x = GetComponentInParent<CanvasScaler>().referenceResolution.x;
+        float y = GetComponentInParent<CanvasScaler>().referenceResolution.y;
 
         float border = x < y ? x / 2 : y / 2;
 

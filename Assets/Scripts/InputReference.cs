@@ -15,6 +15,8 @@ public static class InputReference
     public static string MoveHorizontal = "MoveHorizontal";
     public static string MoveVertical = "MoveVertical";
     public static string OpenMenu = "OpenMenu";
+    public static string MenuHorizontal = "MenuHorizontal";
+    public static string MenuVertical = "MenuVertical";
 
     public static void GetPlayerID()
     {
@@ -146,5 +148,27 @@ public static class InputReference
         }
 
         return pressed;
+    }
+
+    public static float GetMenuHorizontalAxis()
+    {
+        float horizontal = 0;
+
+        horizontal = player.GetAxis(MenuHorizontal);
+
+        horizontal = Mathf.Clamp(horizontal, -1.0f, 1.0f);
+
+        return horizontal;
+    }
+
+    public static float GetMenuVerticalAxis()
+    {
+        float vertical = 0;
+
+        vertical = player.GetAxis(MenuVertical);
+
+        vertical = Mathf.Clamp(vertical, -1.0f, 1.0f);
+
+        return vertical;
     }
 }
