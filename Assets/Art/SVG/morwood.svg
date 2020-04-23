@@ -1,0 +1,32 @@
+<svg id="morwoodLogoID" class="morwood" width="750" height="150">
+
+		<linearGradient id="gradientBackground" x1="0%" y1="0%" x2="100%" y2="0%">
+			  <stop class="gradientBG1" offset="0%" stop-color="pink">
+			  <animate attributeName="stop-color" values="pink;red;pink" dur="2s" repeatCount="indefinite"></animate> 
+			  </stop>
+			  <stop class="gradientBG2" offset="100%" stop-color="blue">
+			  <animate attributeName="stop-color" values="blue;cyan;blue" dur="2s" repeatCount="indefinite"></animate> 
+			  </stop>
+		</linearGradient>
+			
+		<rect x="0" y="0" width="750" height="150" class="gradient"></rect>
+
+		<clipPath id="clipGroup">
+		<path class="moveMbg" d="m175,125 v-50 a50,50 0 0 1 100,0 v50 h-100 z"></path>
+		<path class="moveO1bg" d="m225,75 a50,50 0 0 1 100,0 a50,50 0 0 1 -100,0 z"></path>
+		<path class="moveRbg" d="m275,125 v-100 h50 a50,50 0 0 1 50,50 v50 h-100 z"></path>
+		<path class="moveWbg" d="m325,75 a50,50 0 0 0 100,0 v-50 h-100 v50 z"></path>
+		<path class="moveO2bg" d="m375,75 a50,50 0 0 1 100,0 a50,50 0 0 1 -100,0 z"></path>
+		<path class="moveO3bg" d="m425,75 a50,50 0 0 1 100,0 a50,50 0 0 1 -100,0 z"></path>
+		<path class="moveDbg" d="m475,125 v-100 h50 a50,50 0 0 1 0,100 h-50 z"></path>
+		</clipPath>
+
+		<path class="moveM" d="m175,125 v-50 a50,50 0 0 1 100,0 v50 h-100 z"></path>
+		<path class="moveO1" d="m225,75 a50,50 0 0 1 100,0 a50,50 0 0 1 -100,0 z"></path>
+		<path class="moveR" d="m275,125 v-100 h50 a50,50 0 0 1 50,50 v50 h-100 z"></path>
+		<path class="moveW" d="m325,75 a50,50 0 0 0 100,0 v-50 h-100 v50 z"></path>
+		<path class="moveO2" d="m375,75 a50,50 0 0 1 100,0 a50,50 0 0 1 -100,0 z"></path>
+		<path class="moveO3" d="m425,75 a50,50 0 0 1 100,0 a50,50 0 0 1 -100,0 z"></path>
+		<path class="moveD" d="m475,125 v-100 h50 a50,50 0 0 1 0,100 h-50 z"></path>
+
+	</svg>
