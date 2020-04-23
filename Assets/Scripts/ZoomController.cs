@@ -150,7 +150,11 @@ public class ZoomController : MonoBehaviour
             telescopeOverlayAnimator.ResetTrigger("zoomEnded");
             telescopeOverlayAnimator.SetTrigger("zoomInStarted");
             InputReference.VibrateZoomIn();
-            telescopeCreak.zoomInCreak();
+
+            if (!menu.paused)
+            {
+                telescopeCreak.zoomInCreak();
+            }
         }
         else if (firstZoomBegan && zoomInput == -1)
         {
@@ -158,14 +162,20 @@ public class ZoomController : MonoBehaviour
             telescopeOverlayAnimator.ResetTrigger("zoomEnded");
             telescopeOverlayAnimator.SetTrigger("zoomOutStarted");
             InputReference.VibrateZoomOut();
-            telescopeCreak.zoomOutCreak();
+            if (!menu.paused)
+            {
+                telescopeCreak.zoomOutCreak();
+            }
         }
         else if (firstZoomEnded)
         {
             telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
             telescopeOverlayAnimator.ResetTrigger("zoomOutStarted");
             telescopeOverlayAnimator.SetTrigger("zoomEnded");
-            telescopeCreak.returnCreak();
+            if (!menu.paused)
+            {
+                telescopeCreak.returnCreak();
+            }
         }
 
         telescopeRingRotate.Rotate(zoomInput * Time.deltaTime);

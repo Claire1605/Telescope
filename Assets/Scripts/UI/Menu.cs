@@ -15,6 +15,7 @@ public class Menu : MonoBehaviour
     public GameObject continueObject;
     public Animator menuRotate;
     public ZoomController zoomController;
+    public TelescopeCreak telescopeCreak; 
 
     private bool grab;
     private bool canTurn = true;
@@ -22,9 +23,10 @@ public class Menu : MonoBehaviour
 
     void Start()
     {
-        lensCapAnimation.SwitchLensCapState(LensCapState.OPENING);
         AmbientAudio.Initialise();
         Music.Initialise();
+        lensCapAnimation.SwitchLensCapState(LensCapState.OPENING);
+        telescopeCreak.audioSource.PlayOneShot(telescopeCreak.lensCapSlideOpen);
     }
 
     void Update()
@@ -46,18 +48,20 @@ public class Menu : MonoBehaviour
             {
                 canTurn = false;
                 menuRotate.SetTrigger("turnClockwise");
+                telescopeCreak.zoomInCreak();
             }
             else if (InputReference.GetMenuHorizontalAxis() > 0 && canTurn)
             {
                 canTurn = false;
                 menuRotate.SetTrigger("turnAnticlockwise");
+                telescopeCreak.zoomOutCreak();
             }
             else if (InputReference.GetMenuHorizontalAxis() == 0)
             {
                 canTurn = true;
             }
 
-            if (InputReference.GetZoomIn())
+            if (InputReference.GetMenuSubmit())
             {
                 if (menuRotate.GetCurrentAnimatorStateInfo(0).IsName("MenuRotationContinue"))
                 {
@@ -108,6 +112,8 @@ public class Menu : MonoBehaviour
         telescopeOverlayAnimator.ResetTrigger("zoomEnded");
         telescopeOverlayAnimator.SetTrigger("zoomInStarted");
 
+        telescopeCreak.audioSource.PlayOneShot(telescopeCreak.lensCapSlideClose);
+
         while (lensCapAnimation.lensCapState != LensCapState.CLOSED)
         {
             yield return null;
@@ -157,9 +163,10 @@ public class Menu : MonoBehaviour
     {
         zoomController.gameState = previousState;
 
+        telescopeCreak.audioSource.PlayOneShot(telescopeCreak.lensCapSlideOpen);
+
         menu.SetActive(false);
         cursor.SetActive(false);
-        paused = false;
         lensCapAnimation.SwitchLensCapState(LensCapState.OPENING);
 
         //if (InputReference.GetActiveController() == Rewired.ControllerType.Joystick)
@@ -176,5 +183,7 @@ public class Menu : MonoBehaviour
         telescopeOverlayAnimator.ResetTrigger("zoomInStarted");
         telescopeOverlayAnimator.ResetTrigger("zoomEnded");
         telescopeOverlayAnimator.SetTrigger("zoomOutStarted");
+
+        paused = false;
     }
 }
