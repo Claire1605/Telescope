@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
-public enum GameState {INTRO, MAIN}
+public enum GameState {INTRO, MAIN, MENU}
 public class ZoomController : MonoBehaviour
 {
     public GameState gameState = GameState.INTRO;
@@ -21,6 +22,9 @@ public class ZoomController : MonoBehaviour
     public TelescopeCreak telescopeCreak;
     public TelescopeRingRotate telescopeRingRotate;
     public Menu menu;
+    public Vector3 afterIntroPosition;
+    public AudioMixer mixer;
+    public float musicFadeSpeed = 0.2f;
 
     private Vector3 panVelocity;
     private float zoomSize;
@@ -36,8 +40,14 @@ public class ZoomController : MonoBehaviour
 
     void Start ()
     {
+        if (SaveManager.Load_PassedIntro() && !DebugStatic.AreWeTestingIntro())
+        {
+            transform.position = afterIntroPosition;
+            gameState = GameState.MAIN;
+        }
+
         startPos = transform.position;
-        
+
         if (Camera.main.orthographic)
         {
             zoomSize = Camera.main.orthographicSize;
@@ -166,16 +176,41 @@ public class ZoomController : MonoBehaviour
     }
 
 	void FadeInMusic()
-	{
-		if (gameState == GameState.INTRO)
+    {
+        float musicVolume = GetMusicMixerVolume();
+
+        if (gameState == GameState.INTRO)
 		{
-			GetComponent<AudioSource>().volume = Mathf.Lerp(0.0f, 1f, musicFadeCurve.Evaluate(1.0f - Mathf.Clamp01(zoomSize / (initialZoomSize / 2))));
+            float maxVolume = musicFadeCurve.Evaluate(1.0f - Mathf.Clamp01(zoomSize / (initialZoomSize / 2)));
+
+            SetMixerVolume(Mathf.Min(musicVolume + Time.deltaTime * musicFadeSpeed, maxVolume));
 		}
+        else if (gameState == GameState.MENU)
+        {
+            SetMixerVolume(musicVolume - Time.deltaTime * musicFadeSpeed);
+        }
 		else
-		{
-			GetComponent<AudioSource>().volume = Mathf.Lerp(GetComponent<AudioSource>().volume, 1f, Time.deltaTime);
-		}
+        {
+            SetMixerVolume(musicVolume + Time.deltaTime * musicFadeSpeed);
+        }
+        Debug.Log(GetMusicMixerVolume());
 	}
+
+    private string MIXER_VOLUME = "MusicVolume";
+
+    float GetMusicMixerVolume()
+    {
+        float mixerVolume;
+        mixer.GetFloat(MIXER_VOLUME, out mixerVolume);
+        mixerVolume = Mathf.Pow(10, mixerVolume / 20);
+        return mixerVolume;
+    }
+
+    void SetMixerVolume(float targetVolume)
+    {
+        targetVolume = Mathf.Clamp(targetVolume, 0.0001f, 1.0f);
+        mixer.SetFloat(MIXER_VOLUME, Mathf.Log10(targetVolume) * 20.0f);
+    }
 
     //void FadeInOverlay()
     //{
@@ -215,6 +250,7 @@ public class ZoomController : MonoBehaviour
                     if (gameState == GameState.INTRO)
                     {
                         gameState = GameState.MAIN;
+                        SaveManager.Save_PassedIntro();
                     }
 
                     ZoomZone linkedZoomZone = zoomZone.GetLinkedZoomZone();
@@ -225,6 +261,28 @@ public class ZoomController : MonoBehaviour
 
                     zoomZone.UnRecordZoomZone(linkedZoomZone);
                     linkedZoomZone.RecordZoomZone(zoomZone);
+
+                    //Ambient Audio
+                    if (AmbientAudio.currentTrack != linkedZoomZone.ambientSound)
+                    {
+                        if (AmbientAudio.isFading)
+                        {
+                            StopCoroutine(AmbientAudio.GetFadeCoroutine());
+                        }
+
+                        AmbientAudio.SetFadeCoroutine(StartCoroutine(AmbientAudio.FadeAudio(linkedZoomZone.ambientSound)));
+                    }
+
+                    //Music
+                    if (Music.currentTrack != linkedZoomZone.musicTrack)
+                    {
+                        if (Music.isFading)
+                        {
+                            StopCoroutine(Music.GetFadeCoroutine());
+                        }
+
+                        Music.SetFadeCoroutine(StartCoroutine(Music.FadeAudio(linkedZoomZone.musicTrack)));
+                    }
                 }
 
 				if (zoomZone.InsideZoomZone(Camera.main.transform.position) && (highestPriorityZone == null || zoomZone.priority > highestPriorityZone.priority))
@@ -245,69 +303,74 @@ public class ZoomController : MonoBehaviour
         }
 	}
 
-  //  public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
-  //  {
-		////pan
-		// if ((Input.GetAxis("Horizontal") > 0 && panSpeed.x < 0) || (Input.GetAxis("Horizontal") < 0 && panSpeed.x > 0))
-		//{
-		//	panSpeed.x = 0;
-		//}
+    public void IntroComplete()
+    {
+        SaveManager.Save_PassedIntro();
+    }
 
-		//if ((Input.GetAxis("Vertical") > 0 && panSpeed.y < 0) || (Input.GetAxis("Vertical") < 0 && panSpeed.y > 0))
-		//{
-		//	panSpeed.y = 0;
-		//}
+    //  public void AcceleratedMovement(float panAcceleration, float panDecceleration, float panMaxSpeed)
+    //  {
+    ////pan
+    // if ((Input.GetAxis("Horizontal") > 0 && panSpeed.x < 0) || (Input.GetAxis("Horizontal") < 0 && panSpeed.x > 0))
+    //{
+    //	panSpeed.x = 0;
+    //}
 
-  //      panVelocity += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * panAcceleration * Time.deltaTime;
-  //      panVelocity = Vector3.ClampMagnitude(panVelocity, panMaxSpeed);
+    //if ((Input.GetAxis("Vertical") > 0 && panSpeed.y < 0) || (Input.GetAxis("Vertical") < 0 && panSpeed.y > 0))
+    //{
+    //	panSpeed.y = 0;
+    //}
 
-  //      if (Input.GetAxis("Horizontal") == 0)
-  //      {
-  //          if (panVelocity.x > 0)
-  //          {
-  //              panVelocity.x -= panDecceleration * Time.deltaTime;
+    //      panVelocity += new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * panAcceleration * Time.deltaTime;
+    //      panVelocity = Vector3.ClampMagnitude(panVelocity, panMaxSpeed);
 
-  //              if (panVelocity.x < 0)
-  //              {
-  //                  panVelocity.x = 0;
-  //              }
-  //          }
+    //      if (Input.GetAxis("Horizontal") == 0)
+    //      {
+    //          if (panVelocity.x > 0)
+    //          {
+    //              panVelocity.x -= panDecceleration * Time.deltaTime;
 
-  //          if (panVelocity.x < 0)
-  //          {
-  //              panVelocity.x += panDecceleration * Time.deltaTime;
+    //              if (panVelocity.x < 0)
+    //              {
+    //                  panVelocity.x = 0;
+    //              }
+    //          }
 
-  //              if (panVelocity.x > 0)
-  //              {
-  //                  panVelocity.x = 0;
-  //              }
-  //          }
-  //      }
+    //          if (panVelocity.x < 0)
+    //          {
+    //              panVelocity.x += panDecceleration * Time.deltaTime;
 
-  //      if (Input.GetAxis("Vertical") == 0)
-  //      {
-  //          if (panVelocity.y > 0)
-  //          {
-  //              panVelocity.y -= panDecceleration * Time.deltaTime;
+    //              if (panVelocity.x > 0)
+    //              {
+    //                  panVelocity.x = 0;
+    //              }
+    //          }
+    //      }
 
-  //              if (panVelocity.y < 0)
-  //              {
-  //                  panVelocity.y = 0;
-  //              }
-  //          }
+    //      if (Input.GetAxis("Vertical") == 0)
+    //      {
+    //          if (panVelocity.y > 0)
+    //          {
+    //              panVelocity.y -= panDecceleration * Time.deltaTime;
 
-  //          if (panVelocity.y < 0)
-  //          {
-  //              panVelocity.y += panDecceleration * Time.deltaTime;
+    //              if (panVelocity.y < 0)
+    //              {
+    //                  panVelocity.y = 0;
+    //              }
+    //          }
 
-  //              if (panVelocity.y > 0)
-  //              {
-  //                  panVelocity.y = 0;
-  //              }
-  //          }
-  //      }
+    //          if (panVelocity.y < 0)
+    //          {
+    //              panVelocity.y += panDecceleration * Time.deltaTime;
 
-  //      Vector3 scaledPanSpeed = panVelocity * zoomSize;
-  //      Camera.main.transform.position += scaledPanSpeed * Time.deltaTime;
-  //  }
+    //              if (panVelocity.y > 0)
+    //              {
+    //                  panVelocity.y = 0;
+    //              }
+    //          }
+    //      }
+
+    //      Vector3 scaledPanSpeed = panVelocity * zoomSize;
+    //      Camera.main.transform.position += scaledPanSpeed * Time.deltaTime;
+    //  }
 }

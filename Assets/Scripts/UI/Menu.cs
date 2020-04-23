@@ -14,21 +14,17 @@ public class Menu : MonoBehaviour
     public Animator telescopeOverlayAnimator;
     public GameObject continueObject;
     public Animator menuRotate;
+    public ZoomController zoomController;
 
     private bool grab;
     private bool canTurn = true;
+    private GameState previousState;
 
     void Start()
     {
-        if (SaveManager.Load_PassedIntro())
-        {
-            lensCapAnimation.SwitchLensCapState(LensCapState.CLOSED);
-            OpenMenu(true);
-        }
-        else
-        {
-            lensCapAnimation.SwitchLensCapState(LensCapState.OPENING);
-        }
+        lensCapAnimation.SwitchLensCapState(LensCapState.OPENING);
+        AmbientAudio.Initialise();
+        Music.Initialise();
     }
 
     void Update()
@@ -123,6 +119,12 @@ public class Menu : MonoBehaviour
 
     void OpenMenu(bool startOfGame)
     {
+        if (zoomController.gameState != GameState.MENU)
+        {
+            previousState = zoomController.gameState;
+            zoomController.gameState = GameState.MENU;
+        }
+
         paused = true;
         menu.SetActive(true);
         cursor.SetActive(true);
@@ -153,6 +155,8 @@ public class Menu : MonoBehaviour
 
     public void CloseMenu()
     {
+        zoomController.gameState = previousState;
+
         menu.SetActive(false);
         cursor.SetActive(false);
         paused = false;
