@@ -203,7 +203,6 @@ public class ZoomController : MonoBehaviour
         {
             SetMixerVolume(musicVolume + Time.deltaTime * musicFadeSpeed);
         }
-        Debug.Log(GetMusicMixerVolume());
 	}
 
     private string MIXER_VOLUME = "MusicVolume";
@@ -266,6 +265,10 @@ public class ZoomController : MonoBehaviour
                     ZoomZone linkedZoomZone = zoomZone.GetLinkedZoomZone();
 
                     Vector3 newCameraPosition = linkedZoomZone.transform.position + zoomZone.GetZoomZoneOffset(Camera.main.transform.position) * zoomJump;
+
+                    Debug.Log("Zoom Offset: " + zoomZone.GetZoomZoneOffset(Camera.main.transform.position), zoomZone);
+                    Debug.Log("Zoom Jump: " + zoomJump, zoomZone);
+
                     Camera.main.transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, Camera.main.transform.position.z);
                     zoomSize = zoomSize * zoomJump;
 
@@ -303,7 +306,7 @@ public class ZoomController : MonoBehaviour
 		}
 		
 		if (highestPriorityZone)
-		{
+        {
 			float minZoomSize = highestPriorityZone.GetMinZoomAtPoint(Camera.main.transform.position);
 
 			if (minZoomSize > zoomSize)
