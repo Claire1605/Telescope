@@ -9,6 +9,9 @@ public class TelescopeCreak : MonoBehaviour
     public AudioClip creakZoomOut;
     public AudioClip creakZoomReturn;
 
+    public AudioClip lensCapSlideClose;
+    public AudioClip lensCapSlideOpen;
+
     public void zoomInCreak()
     {
         if (audioSource.isPlaying)

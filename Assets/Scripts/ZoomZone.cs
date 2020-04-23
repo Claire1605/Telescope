@@ -20,6 +20,8 @@ public class ZoomZone : MonoBehaviour
     public int linkedZoomDirection;
     public bool recordZone = true;
     public List<ZoomZone> recordedZoomZones;
+    public AudioClip ambientSound;
+    public AudioClip musicTrack;
 
     private void Start()
     {

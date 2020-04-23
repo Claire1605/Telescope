@@ -17,6 +17,7 @@ public static class InputReference
     public static string OpenMenu = "OpenMenu";
     public static string MenuHorizontal = "MenuHorizontal";
     public static string MenuVertical = "MenuVertical";
+    public static string MenuSubmit = "MenuSubmit";
 
     public static void GetPlayerID()
     {
@@ -170,5 +171,17 @@ public static class InputReference
         vertical = Mathf.Clamp(vertical, -1.0f, 1.0f);
 
         return vertical;
+    }
+
+    public static bool GetMenuSubmit()
+    {
+        bool pressed = false;
+
+        if (player.GetButton(MenuSubmit))
+        {
+            pressed = true;
+        }
+
+        return pressed;
     }
 }
