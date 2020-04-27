@@ -1,10 +1,14 @@
-﻿Shader "Custom/UnlitVector_Textured"
+﻿Shader "Custom/VectorMultiColourSwap"
 {
 	Properties
 	{
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
-		[MaterialToggle] _ColourOverride("Colour override", Float) = 0
-		_Color("Tint", Color) = (1,1,1,1)
+		_LightColour("Light Colour", Color) = (1,1,1,1)
+		_LightRedValue("Light Red Value", Float) = 0.75
+		_MidColour("Mid Colour", Color) = (1,1,1,1)
+		_MidRedValue("Mid Red Value", Float) = 0.5
+		_ShadeColour("Shade Colour", Color) = (1,1,1,1)
+		_ShadeRedValue("Shade Red Value", Float) = 0.25
 		[MaterialToggle] PixelSnap("Pixel snap", Float) = 0
 
 		[HideInInspector] _RendererColor("RendererColor", Color) = (1,1,1,1)
@@ -43,6 +47,12 @@
 				float _ColourOverride;
 				float _OverlayBlend;
 				sampler2D _OverlayTex;
+				fixed4 _LightColour;
+				float _LightRedValue;
+				fixed4 _MidColour;
+				float _MidRedValue;
+				fixed4 _ShadeColour;
+				float _ShadeRedValue;
 
 				v2f VectorVert(appdata_t IN)
 				{
@@ -61,7 +71,11 @@
 					fixed4 color = fixed4(GammaToLinearSpace(IN.color.rgb), IN.color.a);
 					#endif
 
-					OUT.color = (color * (1 - _ColourOverride)) + (_ColourOverride * _Color * _RendererColor);
+					float useLightValue = max(0, sign(color.r - _LightRedValue));
+					float useMidValue = max(0, sign(color.r - _MidRedValue) * (1 - useLightValue));
+					float useShadeValue = max(0, sign(color.r - _ShadeRedValue) * (1 - useMidValue) * (1 - useLightValue));
+
+					OUT.color = useLightValue * _LightColour + useMidValue * _MidColour + useShadeValue * _ShadeColour;
 
 					#ifdef PIXELSNAP_ON
 					OUT.vertex = UnityPixelSnap(OUT.vertex);
