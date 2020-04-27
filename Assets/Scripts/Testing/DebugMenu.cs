@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class DebugStatic
 {
-    public static bool testIntro = false;
+    public static bool testIntro = true;
 
     public static bool AreWeTestingIntro()
     {
