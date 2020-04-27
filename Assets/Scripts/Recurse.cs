@@ -58,10 +58,29 @@ public class Recurse : MonoBehaviour
             return;
         }
 
-        totalRecursions += 1;
-
         GameObject instantiatedObject = PrefabUtility.InstantiatePrefab(recursePrefab, recurseParent) as GameObject;
         
+        // Remove zoom zones from children of the initial prefab
+        if (totalRecursions > 0)
+        {
+            foreach (ZoomZone zoomZone in instantiatedObject.GetComponentsInChildren<ZoomZone>())
+            {
+                DestroyImmediate(zoomZone);
+            }
+
+            foreach (BoxCollider boxCollider in instantiatedObject.GetComponentsInChildren<BoxCollider>())
+            {
+                DestroyImmediate(boxCollider);
+            }
+
+            foreach (Rigidbody rigidbody in instantiatedObject.GetComponentsInChildren<Rigidbody>())
+            {
+                DestroyImmediate(rigidbody);
+            }
+        }
+
+        totalRecursions += 1;
+
         if (recurseZoomZone == null)
         {
             recurseZoomZone = instantiatedObject.GetComponent<ZoomZone>();

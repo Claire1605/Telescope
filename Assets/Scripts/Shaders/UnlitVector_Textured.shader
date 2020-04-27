@@ -5,6 +5,12 @@
 		[PerRendererData] _MainTex("Sprite Texture", 2D) = "white" {}
 		[MaterialToggle] _ColourOverride("Colour override", Float) = 0
 		_Color("Tint", Color) = (1,1,1,1)
+		_LightColour("Light Colour", Color) = (1,1,1,1)
+		_LightValue("Light Value", Int) = 0.75
+		_MidColour("Mid Colour", Color) = (1,1,1,1)
+		_MidValue("Mid Value", Int) = 0.5
+		_ShadeColour("Shade Colour", Color) = (1,1,1,1)
+		_ShadeValue("Shade Value", Int) = 0.25
 		[MaterialToggle] PixelSnap("Pixel snap", Float) = 0
 		
 		[HideInInspector] _RendererColor("RendererColor", Color) = (1,1,1,1)
