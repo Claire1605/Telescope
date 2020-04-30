@@ -96,6 +96,11 @@ public class Recurse : MonoBehaviour
             }
         }
 
+        foreach (SpriteRenderer spriteRenderer in instantiatedObject.GetComponentsInChildren<SpriteRenderer>())
+        {
+            spriteRenderer.sortingOrder = spriteRenderer.sortingOrder + (recurseIterations - currentIteration);
+        }
+
         for (int child = 0; child < instantiatedObject.transform.childCount; child++)
         {
             Transform childTransform = instantiatedObject.transform.GetChild(child);

@@ -19,8 +19,7 @@
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    inkscape:export-filename="C:\Users\Claire\Documents\GitHub\Telescope\Assets\Art\PNG\CircuitBoard.png"
    inkscape:export-xdpi="192.58096"
-   inkscape:export-ydpi="192.58096"
-   shape-rendering="crispEdges">
+   inkscape:export-ydpi="192.58096">
   <metadata
      id="metadata821">
     <rdf:RDF>
@@ -68,7 +67,7 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="PNG"
-     style="display:none;opacity:0.17229728"
+     style="display:inline;opacity:0.17229728"
      sodipodi:insensitive="true">
     <image
        width="327.67999"
@@ -81,7 +80,7 @@
        y="0" />
   </g>
   <g
-     style="display:none"
+     style="display:inline"
      inkscape:label="Background"
      id="g2885"
      inkscape:groupmode="layer"
@@ -98,7 +97,7 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Circuit Board"
-     style="display:none">
+     style="display:inline">
     <path
        style="fill:none;fill-opacity:1;stroke:#7195da;stroke-width:2.26771665;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 150,195.29448 v 27.38551 h -30 l -25,45 H 30"
@@ -1544,7 +1543,7 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Leaf"
-     style="display:none"
+     style="display:inline"
      sodipodi:insensitive="true">
     <path
        style="opacity:1;fill:#9fc1a1;fill-opacity:1;stroke:#9fc1a1;stroke-width:1.7116586;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
