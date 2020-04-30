@@ -38,6 +38,13 @@ public class ZoomController : MonoBehaviour
         InputReference.GetPlayerID();
     }
 
+    public void GoToObservatory()
+    {
+        transform.position = afterIntroPosition;
+        zoomSize = initialZoomSize;
+        gameState = GameState.MAIN;
+    }
+
     void Start ()
     {
         if (SaveManager.Load_PassedIntro() && !DebugStatic.AreWeTestingIntro())
@@ -272,11 +279,21 @@ public class ZoomController : MonoBehaviour
                     Camera.main.transform.position = new Vector3(newCameraPosition.x, newCameraPosition.y, Camera.main.transform.position.z);
                     zoomSize = zoomSize * zoomJump;
 
+                    if (Camera.main.orthographic)
+                    {
+                        Camera.main.orthographicSize = zoomSize;
+                        Camera.main.transform.localScale = Vector3.one * zoomSize;
+                    }
+                    else
+                    {
+                        Camera.main.fieldOfView = zoomSize;
+                    }
+
                     zoomZone.UnRecordZoomZone(linkedZoomZone);
                     linkedZoomZone.RecordZoomZone(zoomZone);
 
                     //Ambient Audio
-                    if (AmbientAudio.currentTrack != linkedZoomZone.ambientSound)
+                    if (linkedZoomZone.ambientSound != null && AmbientAudio.currentTrack != linkedZoomZone.ambientSound)
                     {
                         if (AmbientAudio.isFading)
                         {
@@ -287,7 +304,7 @@ public class ZoomController : MonoBehaviour
                     }
 
                     //Music
-                    if (Music.currentTrack != linkedZoomZone.musicTrack)
+                    if (linkedZoomZone.musicTrack != null && Music.currentTrack != linkedZoomZone.musicTrack)
                     {
                         if (Music.isFading)
                         {
@@ -302,6 +319,11 @@ public class ZoomController : MonoBehaviour
 				{
 					highestPriorityZone = zoomZone;
 				}
+
+                if (zoomJump != 0.0f)
+                {
+                    break;
+                }
 			}
 		}
 		

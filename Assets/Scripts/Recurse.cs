@@ -11,8 +11,10 @@ public class Recurse : MonoBehaviour
 {
     public GameObject recursePrefab;
     public int recurseIterations = 5;
+    public bool dontRemoveZoomZones = false;
     public string recursePointName = "RecursePoint";
     public bool recurseNow = false;
+    public string sortingLayer;
     private int totalRecursions = 0;
     private ZoomZone recurseZoomZone;
 
@@ -61,7 +63,7 @@ public class Recurse : MonoBehaviour
         GameObject instantiatedObject = PrefabUtility.InstantiatePrefab(recursePrefab, recurseParent) as GameObject;
         
         // Remove zoom zones from children of the initial prefab
-        if (totalRecursions > 0)
+        if (totalRecursions > 0 && dontRemoveZoomZones == false)
         {
             foreach (ZoomZone zoomZone in instantiatedObject.GetComponentsInChildren<ZoomZone>())
             {
@@ -99,6 +101,11 @@ public class Recurse : MonoBehaviour
         foreach (SpriteRenderer spriteRenderer in instantiatedObject.GetComponentsInChildren<SpriteRenderer>())
         {
             spriteRenderer.sortingOrder = spriteRenderer.sortingOrder + (recurseIterations - currentIteration);
+            if (sortingLayer != "")
+            {
+                spriteRenderer.sortingLayerName = sortingLayer;
+            }
+           
         }
 
         for (int child = 0; child < instantiatedObject.transform.childCount; child++)

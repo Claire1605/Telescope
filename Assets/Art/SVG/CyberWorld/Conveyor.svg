@@ -14,8 +14,8 @@
    viewBox="0 0 210 297"
    version="1.1"
    id="svg5665"
-   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
-   sodipodi:docname="Conveyor.svg">
+   sodipodi:docname="Conveyor.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
   <defs
      id="defs5659">
     <inkscape:path-effect
@@ -56,11 +56,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="-560.70511"
-     inkscape:cy="144.88662"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="-765.15002"
+     inkscape:cy="1.391118"
      inkscape:document-units="mm"
-     inkscape:current-layer="svg5665"
+     inkscape:current-layer="layer1"
      showgrid="true"
      showborder="false"
      inkscape:snap-global="false"
@@ -91,11 +91,11 @@
      id="layer1"
      style="display:inline">
     <path
-       style="fill:none;fill-rule:nonzero;stroke:#7195da;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="m -232.83333,318.16667 v -127 h 127 V 297 h -105.83333 v 0 0"
+       style="fill:none;fill-rule:nonzero;stroke:#7195da;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m -232.83333,318.16667 v -127 h 127 V 297 h -108.31213"
        id="path6214"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccccc" />
+       sodipodi:nodetypes="ccccc" />
   </g>
   <g
      inkscape:groupmode="layer"

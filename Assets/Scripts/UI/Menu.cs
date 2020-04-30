@@ -69,6 +69,7 @@ public class Menu : MonoBehaviour
                 }
                 else if (menuRotate.GetCurrentAnimatorStateInfo(0).IsName("MenuRotationObservatory"))
                 {
+                    zoomController.GoToObservatory();
                     CloseMenu();
                 } 
                 else if (menuRotate.GetCurrentAnimatorStateInfo(0).IsName("MenuRotationQuit"))
